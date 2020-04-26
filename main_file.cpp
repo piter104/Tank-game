@@ -32,9 +32,14 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 float speed = 0; //predkosc czajnika
 float shoot = 1.0f; //spawn kuli
 float angle = 90.0f;
+//float lufa_angle = 90.0f
 float bullet_speed = 0.3f;
 bool shoot_ball = false;
 bool fisrt_frame_shot = true;
+float lastX = 400;
+float lastY = 300;
+float yaw = 0.0f;
+float pitch = 0.0f;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, 7.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -44,6 +49,8 @@ glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
 glm::vec4 Transformed = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
 
 glm::vec3 speed_vector = glm::vec3(0.0f, 0.0f, 0.0f);
+
+glm::vec3 camera_transform = glm::vec3(0.0f, 2.0f, 7.0f);
 
 glm::mat4 M_copy;
 
@@ -77,7 +84,33 @@ GLuint readTexture(char* filename) {
 //Procedura obsługi myszki
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
+	lastX = xpos;
+	lastY = ypos;
 
+	const float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += yoffset;
+	pitch += xoffset;
+
+	if ((pitch > 89.0f) || (pitch < -89.0f)) {
+		if (pitch > 89.0f)
+			pitch = 89.0f;
+		if (pitch < -89.0f)
+			pitch = -89.0f;
+	}
+	else
+	{
+		glm::vec3 direction;
+		direction.x = camera_transform[0] * cos(glm::radians(xoffset)) + camera_transform[2] * sin(glm::radians(xoffset));
+		direction.z = -camera_transform[0] * sin(glm::radians(xoffset)) + camera_transform[2] * cos(glm::radians(xoffset));
+		direction.y = 2.0f;
+		camera_transform = direction;
+	}
+	
 }
 
 //Procedura obsługi klawiatury
@@ -85,7 +118,7 @@ void key_callback(GLFWwindow* window, int key,
 	int scancode, int action, int mods) {
 
 	const float movingSpeed = 0.5f; // adjust accordingly
-	const float rotateSpeed = PI / 7;
+	const float rotateSpeed = PI / 6;
 	const float cameraSpeed = 0.001f;
 	//glm::vec3 cameraForward= glm::vec3(0.0f, 0.0f, driveSpeed);
 
@@ -189,14 +222,14 @@ void drawScene(GLFWwindow* window) {
 	//namierzanie obiektu
 	Transformed = M * Position;
 	cameraFront = glm::vec3(Transformed[0], Transformed[1], Transformed[2]);
-	cameraPos = glm::vec3(0.0f, 2.0f, 7.0f) + cameraFront;
+	cameraPos = camera_transform + cameraFront;
 
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 
 
 	//wspolrzedne
-	printf("%f, %f, %f, %f\n", Transformed[0], Transformed[1], Transformed[2], Transformed[3]);
+	//printf("%f, %f, %f, %f\n", Transformed[0], Transformed[1], Transformed[2], Transformed[3]);
 
 	//Opis modelu
 	//Tablica współrzędnych wierzchołków
@@ -264,25 +297,30 @@ void drawScene(GLFWwindow* window) {
 
 	Models::cube.drawSolid(); //Narysuj obiekt
 
-	glm::vec3 lufa_cords = glm::vec3(1.2f, 1.7f, 0.0f);
 
-	glm::mat4 M_lufa = glm::translate(M, lufa_cords); //...i macierz przesunięcia
-	M_lufa = glm::scale(M_lufa, glm::vec3(0.4f, 0.1f, 0.1f));
-
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_lufa)); //Załaduj do programu cieniującego macierz modelu
-
-	Models::cube.drawSolid(); //Narysuj obiekt
 
 	glm::mat4 M_wieza = glm::translate(M, glm::vec3(0.0f, 1.5f, 0.0f)); //...i macierz przesunięcia
 	M_wieza = glm::scale(M_wieza, glm::vec3(1.0f, 1.0f, 1.0f));
+	M_wieza = glm::rotate(M_wieza, glm::radians(pitch), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_wieza)); //Załaduj do programu cieniującego macierz modelu
 
 	Models::teapot.drawSolid(); //Narysuj obiekt
 
+	glm::vec3 lufa_cords = glm::vec3(1.2f, 0.2f, 0.0f);
+
+	glm::mat4 M_lufa = glm::translate(M_wieza, lufa_cords); //...i macierz przesunięcia
+	//M_lufa = glm::rotate(M_lufa, glm::radians(pitch), glm::vec3(0.0f, 1.0f, 0.0f));
+	M_lufa = glm::scale(M_lufa, glm::vec3(0.4f, 0.1f, 0.1f));
+
+
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_lufa)); //Załaduj do programu cieniującego macierz modelu
+
+	Models::cube.drawSolid(); //Narysuj obiekt
+
 	glUniform4f(spLambert->u("color"), 1, 1, 0, 1);
 	glm::mat4 M_skrzynia = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-	M_skrzynia = glm::scale(M_skrzynia, glm::vec3(0.5f, 1.0f, 0.5f));
+	M_skrzynia = glm::scale(M_skrzynia, glm::vec3(0.5f, 0.5f, 0.5f));
 	M_skrzynia = glm::translate(M_skrzynia, glm::vec3(8.0f, 0.0f, -8.0f));
 
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_skrzynia)); //Załaduj do programu cieniującego macierz modelu
@@ -295,7 +333,7 @@ void drawScene(GLFWwindow* window) {
 	{
 
 		if (fisrt_frame_shot == true) {
-			M_copy = M;
+			M_copy = M_wieza;
 			fisrt_frame_shot = false;
 		}
 
