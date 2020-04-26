@@ -86,7 +86,7 @@ GLuint readTexture(char* filename) {
 //Procedura obsługi myszki
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	float xoffset = xpos - lastX;
+	float xoffset = lastX - xpos;
 	float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
 	lastX = xpos;
 	lastY = ypos;
@@ -145,12 +145,7 @@ void key_callback(GLFWwindow* window, int key,
 		angle += rotateSpeed;
 		pitch_limit_up += rotateSpeed;
 		pitch_limit_down += rotateSpeed;
-		if ((pitch > pitch_limit_up) || (pitch < pitch_limit_down)) {
-			glm::vec3 direction;
-			direction.x = camera_transform[0] * cos(glm::radians(rotateSpeed)) + camera_transform[2] * sin(glm::radians(rotateSpeed));
-			direction.z = -camera_transform[0] * sin(glm::radians(rotateSpeed)) + camera_transform[2] * cos(glm::radians(rotateSpeed));
-			direction.y = 2.0f;
-			camera_transform = direction;
+		if ((pitch < pitch_limit_up) && (pitch > pitch_limit_down)) {
 		}
 		else
 		{
@@ -158,6 +153,11 @@ void key_callback(GLFWwindow* window, int key,
 				pitch = pitch_limit_up;
 			if (pitch < pitch_limit_down)
 				pitch = pitch_limit_down;
+			glm::vec3 direction;
+			direction.x = camera_transform[0] * cos(glm::radians(rotateSpeed)) + camera_transform[2] * sin(glm::radians(rotateSpeed));
+			direction.z = -camera_transform[0] * sin(glm::radians(rotateSpeed)) + camera_transform[2] * cos(glm::radians(rotateSpeed));
+			direction.y = 2.0f;
+			camera_transform = direction;
 		}
 
 		//c//ameraPos = glm::vec3(0.0f, 2.0f, 7.0f) - glm::normalize(glm::cross(cameraFront, cameraUp));
@@ -168,12 +168,8 @@ void key_callback(GLFWwindow* window, int key,
 		angle -= rotateSpeed;
 		pitch_limit_up -= rotateSpeed;
 		pitch_limit_down -= rotateSpeed;
-		if ((pitch > pitch_limit_up) || (pitch < pitch_limit_down)) {
-			glm::vec3 direction;
-			direction.x = camera_transform[0] * cos(glm::radians(rotateSpeed)) + camera_transform[2] * sin(glm::radians(rotateSpeed));
-			direction.z = -camera_transform[0] * sin(glm::radians(rotateSpeed)) + camera_transform[2] * cos(glm::radians(rotateSpeed));
-			direction.y = 2.0f;
-			camera_transform = direction;
+		if ((pitch < pitch_limit_up) && (pitch > pitch_limit_down)) {
+
 		}
 		else
 		{
@@ -181,6 +177,11 @@ void key_callback(GLFWwindow* window, int key,
 				pitch = pitch_limit_up;
 			if (pitch < pitch_limit_down)
 				pitch = pitch_limit_down;
+			glm::vec3 direction;
+			direction.x = camera_transform[0] * cos(glm::radians(-rotateSpeed)) + camera_transform[2] * sin(glm::radians(-rotateSpeed));
+			direction.z = -camera_transform[0] * sin(glm::radians(-rotateSpeed)) + camera_transform[2] * cos(glm::radians(-rotateSpeed));
+			direction.y = 2.0f;
+			camera_transform = direction;
 		}
 		//cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 58.0f;
 		//cameraFront -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 8.0f;
@@ -253,6 +254,7 @@ void drawScene(GLFWwindow* window) {
 	M = glm::rotate(M, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
 	M = glm::scale(M, glm::vec3(0.8f, 0.3f, 0.7f));
 
+	printf("pitch: %f\n", pitch);
 
 	//namierzanie obiektu
 	Transformed = M * Position;
