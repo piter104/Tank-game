@@ -4,13 +4,11 @@ rozprowadzać dalej i / lub modyfikować na warunkach Powszechnej
 Licencji Publicznej GNU, wydanej przez Fundację Wolnego
 Oprogramowania - według wersji 2 tej Licencji lub(według twojego
 wyboru) którejś z późniejszych wersji.
-
 Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on
 użyteczny - jednak BEZ JAKIEJKOLWIEK GWARANCJI, nawet domyślnej
 gwarancji PRZYDATNOŚCI HANDLOWEJ albo PRZYDATNOŚCI DO OKREŚLONYCH
 ZASTOSOWAŃ.W celu uzyskania bliższych informacji sięgnij do
 Powszechnej Licencji Publicznej GNU.
-
 Z pewnością wraz z niniejszym programem otrzymałeś też egzemplarz
 Powszechnej Licencji Publicznej GNU(GNU General Public License);
 jeśli nie - napisz do Free Software Foundation, Inc., 59 Temple
@@ -31,8 +29,8 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "lodepng.h"
 #include "shaderprogram.h"
 
-float speed = 0; //Prędkość kątowa obrotu obiektu
-float shoot = 1.0f; //skret kół
+float speed = 0; //predkosc czajnika
+float shoot = 1.0f; //spawn kuli
 float angle = 90.0f;
 float bullet_speed = 0.3f;
 bool shoot_ball = false;
@@ -41,35 +39,73 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, 7.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
+glm::vec4 Transformed = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+
+glm::vec3 speed_vector = glm::vec3(0.0f, 0.0f, 0.0f);
+
+GLuint tex; //Uchwyt – deklaracja globalna
+
+GLuint readTexture(char* filename) {
+	GLuint tex;
+	glActiveTexture(GL_TEXTURE0);
+
+	//Wczytanie do pamięci komputera
+	std::vector<unsigned char> image;   //Alokuj wektor do wczytania obrazka
+	unsigned width, height;   //Zmienne do których wczytamy wymiary obrazka
+	//Wczytaj obrazek
+	unsigned error = lodepng::decode(image, width, height, filename);
+
+	//Import do pamięci karty graficznej
+	glGenTextures(1, &tex); //Zainicjuj jeden uchwyt
+	glBindTexture(GL_TEXTURE_2D, tex); //Uaktywnij uchwyt
+	//Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	return tex;
+}
+
 
 //Procedura obsługi klawiatury
 void key_callback(GLFWwindow* window, int key,
 	int scancode, int action, int mods) {
 
-	const float cameraSpeed = 0.05f; // adjust accordingly
-	const float rotateSpeed = PI/6;
-	const float driveSpeed = 0.1f;
+	const float movingSpeed = 0.5f; // adjust accordingly
+	const float rotateSpeed = PI / 7;
+	const float cameraSpeed = 0.001f;
 	//glm::vec3 cameraForward= glm::vec3(0.0f, 0.0f, driveSpeed);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		speed += driveSpeed;
-		cameraPos += driveSpeed * cameraFront;
+		speed -= movingSpeed;
+		speed_vector.z -= movingSpeed * sin(angle * PI / 180);
+		speed_vector.x += movingSpeed * cos(angle * PI / 180);
+
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		speed -= driveSpeed;
-		cameraPos -= driveSpeed * cameraFront;
+		speed += movingSpeed;
+		speed_vector.z += movingSpeed * sin(angle*PI/180);
+		speed_vector.x -= movingSpeed * cos(angle * PI / 180);
 	}
+
+	// Tu do poprawki!!!!!!!!!!!!!!!!!!!!!
+
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		angle -= rotateSpeed;
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * driveSpeed;
+		//c//ameraPos = glm::vec3(0.0f, 2.0f, 7.0f) - glm::normalize(glm::cross(cameraFront, cameraUp));
+		//cameraFront += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 8.0f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		angle += rotateSpeed;
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * driveSpeed;
+		//cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 58.0f;
+		//cameraFront -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 8.0f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
@@ -100,30 +136,99 @@ void error_callback(int error, const char* description) {
 
 //Procedura inicjująca
 void initOpenGLProgram(GLFWwindow* window) {
-    initShaders();
+	initShaders();
 	//************Tutaj umieszczaj kod, który należy wykonać raz, na początku programu************
 	glClearColor(0.5, 0.12, 0.9, 1); //Ustaw kolor czyszczenia bufora kolorów
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
+	tex = readTexture((char*)"bricks.png");
 }
 
 
 //Zwolnienie zasobów zajętych przez program
 void freeOpenGLProgram(GLFWwindow* window) {
-    freeShaders();
-    //************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************
+	freeShaders();
+	glDeleteTextures(1, &tex);
+	//************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************
 }
 
 //Procedura rysująca zawartość sceny
 void drawScene(GLFWwindow* window) {
 	//************Tutaj umieszczaj kod rysujący obraz******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
-
 	glm::mat4 M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M = glm::translate(M, speed_vector);
 	M = glm::rotate(M, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
-	M = glm::translate(M, glm::vec3(speed, 0.0f, 0.0f));
-	glm::mat4 V = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp); //Wylicz macierz widoku
+	
+
+	//namierzanie obiektu
+	Transformed = M * Position;
+	cameraFront = glm::vec3(Transformed[0], Transformed[1], Transformed[2]);
+	cameraPos = glm::vec3(0.0f, 2.0f, 7.0f) + cameraFront;
+	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
+
+	glm::vec4 add = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+
+	
+	//wspolrzedne
+	printf("%f, %f, %f, %f\n", Transformed[0], Transformed[1], Transformed[2], Transformed[3]);
+
+//Opis modelu
+//Tablica współrzędnych wierzchołków
+//Opis modelu
+//Tablica współrzędnych wierzchołków
+	float verts[] = {
+	  1.0f,-1.0f,0.0f,1.0f, //A
+	 -1.0f, 1.0f,0.0f,1.0f, //B
+	 -1.0f,-1.0f,0.0f,1.0f, //C
+
+	  1.0f,-1.0f,0.0f,1.0f, //A
+	  1.0f, 1.0f,0.0f,1.0f, //D
+	 -1.0f, 1.0f,0.0f,1.0f, //B
+	};
+
+	//Tablica współrzędnych teksturowania
+	float texCoords[] = {
+	  1.0f, 0.0f,   //A
+	  0.0f, 1.0f,    //B
+	  0.0f, 0.0f,    //C
+
+	  1.0f, 0.0f,    //A
+	  1.0f, 1.0f,    //D
+	  0.0f, 1.0f,    //B
+	};
+
+	//Liczba wierzchołków w tablicy
+	int vertexCount = 6;
+
+	//Kod rysujący
+	spTextured->use();
+	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V));
+	glm::mat4 M2 = glm::mat4(1.0f);
+	M2 = glm::rotate(M2, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
+	M2 = glm::rotate(M2, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+	M2 = glm::translate(M2, glm::vec3(0.0f, 0.0f, 0.5f));
+	M2 = glm::scale(M2, glm::vec3(10.0f, 50.0f, 10.0f));
+	//M2 = glm::translate(M, glm::vec3(speed, 0.0f, 0.0f));
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M2));
+
+	glEnableVertexAttribArray(spTextured->a("vertex"));
+	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, verts);
+
+	glEnableVertexAttribArray(spTextured->a("texCoord"));
+	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glUniform1i(spLambertTextured->u("tex"), 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+
+	glDisableVertexAttribArray(spTextured->a("vertex"));
+	glDisableVertexAttribArray(spTextured->a("texCoord"));
+	
 
 	spLambert->use(); //Aktywuj program cieniujący
 
@@ -134,7 +239,23 @@ void drawScene(GLFWwindow* window) {
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
 
 	Models::teapot.drawSolid(); //Narysuj obiekt
+	glm::mat4 M_lufa = glm::translate(M, glm::vec3(1.2f, 0.25f, 0.0f)); //...i macierz przesunięcia
+	M_lufa = glm::scale(M_lufa, glm::vec3(0.4f, 0.1f, 0.1f));
 
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_lufa)); //Załaduj do programu cieniującego macierz modelu
+
+	Models::cube.drawSolid(); //Narysuj obiekt
+
+	glUniform4f(spLambert->u("color"), 1, 1, 0, 1);
+	glm::mat4 M_skrzynia = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+	M_skrzynia = glm::scale(M_skrzynia, glm::vec3(0.5f, 0.5f, 0.5f));
+	M_skrzynia = glm::translate(M_skrzynia, glm::vec3(8.0f, 0.0f, -8.0f));
+
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_skrzynia)); //Załaduj do programu cieniującego macierz modelu
+
+	Models::cube.drawSolid(); //Narysuj obiekt
+
+	glUniform4f(spLambert->u("color"), 0, 1, 0, 1);
 
 	if (shoot_ball == true)
 	{
