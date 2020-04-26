@@ -40,6 +40,8 @@ float lastX = 400;
 float lastY = 300;
 float yaw = 0.0f;
 float pitch = 0.0f;
+float pitch_limit_up = 89.0f;
+float pitch_limit_down = -89.0f;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, 7.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -96,11 +98,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	yaw += yoffset;
 	pitch += xoffset;
 
-	if ((pitch > 89.0f) || (pitch < -89.0f)) {
-		if (pitch > 89.0f)
-			pitch = 89.0f;
-		if (pitch < -89.0f)
-			pitch = -89.0f;
+	if ((pitch > pitch_limit_up) || (pitch < pitch_limit_down)) {
+		if (pitch > pitch_limit_up)
+			pitch = pitch_limit_up;
+		if (pitch < pitch_limit_down)
+			pitch = pitch_limit_down;
 	}
 	else
 	{
@@ -118,7 +120,7 @@ void key_callback(GLFWwindow* window, int key,
 	int scancode, int action, int mods) {
 
 	const float movingSpeed = 0.5f; // adjust accordingly
-	const float rotateSpeed = PI / 6;
+	const float rotateSpeed = PI / 2;
 	const float cameraSpeed = 0.001f;
 	//glm::vec3 cameraForward= glm::vec3(0.0f, 0.0f, driveSpeed);
 
@@ -141,12 +143,45 @@ void key_callback(GLFWwindow* window, int key,
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		angle += rotateSpeed;
+		pitch_limit_up += rotateSpeed;
+		pitch_limit_down += rotateSpeed;
+		if ((pitch > pitch_limit_up) || (pitch < pitch_limit_down)) {
+			glm::vec3 direction;
+			direction.x = camera_transform[0] * cos(glm::radians(rotateSpeed)) + camera_transform[2] * sin(glm::radians(rotateSpeed));
+			direction.z = -camera_transform[0] * sin(glm::radians(rotateSpeed)) + camera_transform[2] * cos(glm::radians(rotateSpeed));
+			direction.y = 2.0f;
+			camera_transform = direction;
+		}
+		else
+		{
+			if (pitch > pitch_limit_up)
+				pitch = pitch_limit_up;
+			if (pitch < pitch_limit_down)
+				pitch = pitch_limit_down;
+		}
+
 		//c//ameraPos = glm::vec3(0.0f, 2.0f, 7.0f) - glm::normalize(glm::cross(cameraFront, cameraUp));
 		//cameraFront += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 8.0f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		angle -= rotateSpeed;
+		pitch_limit_up -= rotateSpeed;
+		pitch_limit_down -= rotateSpeed;
+		if ((pitch > pitch_limit_up) || (pitch < pitch_limit_down)) {
+			glm::vec3 direction;
+			direction.x = camera_transform[0] * cos(glm::radians(rotateSpeed)) + camera_transform[2] * sin(glm::radians(rotateSpeed));
+			direction.z = -camera_transform[0] * sin(glm::radians(rotateSpeed)) + camera_transform[2] * cos(glm::radians(rotateSpeed));
+			direction.y = 2.0f;
+			camera_transform = direction;
+		}
+		else
+		{
+			if (pitch > pitch_limit_up)
+				pitch = pitch_limit_up;
+			if (pitch < pitch_limit_down)
+				pitch = pitch_limit_down;
+		}
 		//cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 58.0f;
 		//cameraFront -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 8.0f;
 	}
@@ -301,6 +336,7 @@ void drawScene(GLFWwindow* window) {
 
 	glm::mat4 M_wieza = glm::translate(M, glm::vec3(0.0f, 1.5f, 0.0f)); //...i macierz przesunięcia
 	M_wieza = glm::scale(M_wieza, glm::vec3(1.0f, 1.0f, 1.0f));
+	M_wieza = glm::rotate(M_wieza, glm::radians(90.0f - angle), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
 	M_wieza = glm::rotate(M_wieza, glm::radians(pitch), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_wieza)); //Załaduj do programu cieniującego macierz modelu
