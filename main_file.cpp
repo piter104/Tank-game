@@ -30,10 +30,9 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "shaderprogram.h"
 
 float speed = 0; //predkosc czajnika
-float shoot = 1.0f; //spawn kuli
+glm::vec3 shoot = glm::vec3(1.0f, 0.5f, 0.0f); //spawn kuli
 float angle = 90.0f;
 //float lufa_angle = 90.0f
-float bullet_speed = 0.3f;
 bool shoot_ball = false;
 bool fisrt_frame_shot = true;
 float lastX = 400;
@@ -42,6 +41,8 @@ float yaw = 0.0f;
 float pitch = 0.0f;
 float pitch_limit_up = 89.0f;
 float pitch_limit_down = -89.0f;
+float yaw_limit_down = 0.0f;
+float yaw_limit_up = 15.0f;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, 7.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -49,6 +50,8 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
 glm::vec4 Transformed = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+
+glm::vec3  bullet_vector = glm::vec3(0.3f, -0.01, 0.0f);
 
 glm::vec3 speed_vector = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -97,6 +100,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	yaw += yoffset;
 	pitch += xoffset;
+
+	if (yaw > yaw_limit_up)
+		yaw = yaw_limit_up;
+	if (yaw < yaw_limit_down)
+		yaw = yaw_limit_down;
 
 	if ((pitch > pitch_limit_up) || (pitch < pitch_limit_down)) {
 		if (pitch > pitch_limit_up)
@@ -202,14 +210,14 @@ void key_callback(GLFWwindow* window, int key,
 
 int shooting(int counter)
 {
-	if (shoot_ball == true && counter < 40)
+	if (shoot_ball == true && counter < 100)
 	{
-		shoot += bullet_speed;
+		shoot = shoot + bullet_vector;
 		counter += 1;
 	}
 	else
 	{
-		shoot = 1.0f;
+		shoot = glm::vec3(1.0f, 0.0f, 0.0f);
 		shoot_ball = false;
 		counter = 0;
 		fisrt_frame_shot = true;
@@ -254,7 +262,7 @@ void drawScene(GLFWwindow* window) {
 	M = glm::rotate(M, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
 	M = glm::scale(M, glm::vec3(0.8f, 0.3f, 0.7f));
 
-	printf("pitch: %f\n", pitch);
+	printf("pitch: %f, yaw: %f\n", pitch, yaw);
 
 	//namierzanie obiektu
 	Transformed = M * Position;
@@ -340,6 +348,8 @@ void drawScene(GLFWwindow* window) {
 	M_wieza = glm::scale(M_wieza, glm::vec3(1.0f, 1.0f, 1.0f));
 	M_wieza = glm::rotate(M_wieza, glm::radians(90.0f - angle), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
 	M_wieza = glm::rotate(M_wieza, glm::radians(pitch), glm::vec3(0.0f, 1.0f, 0.0f));
+	M_wieza = glm::rotate(M_wieza, glm::radians(yaw), glm::vec3(0.0f, 0.0f, 1.0f));
+
 
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_wieza)); //Załaduj do programu cieniującego macierz modelu
 
@@ -376,8 +386,8 @@ void drawScene(GLFWwindow* window) {
 		}
 
 
-		glm::mat4 Mp1 = glm::translate(M_copy, lufa_cords + glm::vec3(shoot - 1.0f, 0.0f, 0.0f)); //...i macierz przesunięcia
-		Mp1 = glm::scale(Mp1, glm::vec3(0.1f, 0.1f, 0.1f));
+		glm::mat4 Mp1 = glm::translate(M_copy, lufa_cords + glm::vec3(shoot[0] - 1.0f, shoot[1], shoot[2])); //...i macierz przesunięcia
+		Mp1 = glm::scale(Mp1, glm::vec3(0.2f, 0.2f, 0.2f));
 		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp1));  //Załadowanie macierzy modelu do programu cieniującego
 		glUniform4f(spLambert->u("color"), 0, 1, 0, 1); //Planeta jest zielona
 
