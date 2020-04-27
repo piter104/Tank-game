@@ -39,10 +39,10 @@ float lastX = 400;
 float lastY = 300;
 float yaw = 0.0f;
 float pitch = 0.0f;
-float pitch_limit_up = 89.0f;
-float pitch_limit_down = -89.0f;
 float yaw_limit_down = 0.0f;
 float yaw_limit_up = 15.0f;
+
+bool collision = false;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, 7.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -62,6 +62,7 @@ glm::mat4 M_copy;
 GLuint tex; //Uchwyt – deklaracja globalna
 
 void freeOpenGLProgram(GLFWwindow* window);
+
 
 GLuint readTexture(char* filename) {
 	GLuint tex;
@@ -106,31 +107,20 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	if (yaw < yaw_limit_down)
 		yaw = yaw_limit_down;
 
-	if ((pitch > pitch_limit_up) || (pitch < pitch_limit_down)) {
-		if (pitch > pitch_limit_up)
-			pitch = pitch_limit_up;
-		if (pitch < pitch_limit_down)
-			pitch = pitch_limit_down;
-	}
-	else
-	{
 		glm::vec3 direction;
 		direction.x = camera_transform[0] * cos(glm::radians(xoffset)) + camera_transform[2] * sin(glm::radians(xoffset));
 		direction.z = -camera_transform[0] * sin(glm::radians(xoffset)) + camera_transform[2] * cos(glm::radians(xoffset));
 		direction.y = 2.0f;
 		camera_transform = direction;
-	}
-	
 }
 
 //Procedura obsługi klawiatury
 void key_callback(GLFWwindow* window, int key,
 	int scancode, int action, int mods) {
 
-	const float movingSpeed = 0.5f; // adjust accordingly
+	const float movingSpeed = 0.25f; // adjust accordingly
 	const float rotateSpeed = PI / 2;
 	const float cameraSpeed = 0.001f;
-	//glm::vec3 cameraForward= glm::vec3(0.0f, 0.0f, driveSpeed);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
@@ -146,53 +136,13 @@ void key_callback(GLFWwindow* window, int key,
 		speed_vector.x -= movingSpeed * cos(angle * PI / 180);
 	}
 
-	// Tu do poprawki!!!!!!!!!!!!!!!!!!!!!
-
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		angle += rotateSpeed;
-		pitch_limit_up += rotateSpeed;
-		pitch_limit_down += rotateSpeed;
-		if ((pitch < pitch_limit_up) && (pitch > pitch_limit_down)) {
-		}
-		else
-		{
-			if (pitch > pitch_limit_up)
-				pitch = pitch_limit_up;
-			if (pitch < pitch_limit_down)
-				pitch = pitch_limit_down;
-			glm::vec3 direction;
-			direction.x = camera_transform[0] * cos(glm::radians(rotateSpeed)) + camera_transform[2] * sin(glm::radians(rotateSpeed));
-			direction.z = -camera_transform[0] * sin(glm::radians(rotateSpeed)) + camera_transform[2] * cos(glm::radians(rotateSpeed));
-			direction.y = 2.0f;
-			camera_transform = direction;
-		}
-
-		//c//ameraPos = glm::vec3(0.0f, 2.0f, 7.0f) - glm::normalize(glm::cross(cameraFront, cameraUp));
-		//cameraFront += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 8.0f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		angle -= rotateSpeed;
-		pitch_limit_up -= rotateSpeed;
-		pitch_limit_down -= rotateSpeed;
-		if ((pitch < pitch_limit_up) && (pitch > pitch_limit_down)) {
-
-		}
-		else
-		{
-			if (pitch > pitch_limit_up)
-				pitch = pitch_limit_up;
-			if (pitch < pitch_limit_down)
-				pitch = pitch_limit_down;
-			glm::vec3 direction;
-			direction.x = camera_transform[0] * cos(glm::radians(-rotateSpeed)) + camera_transform[2] * sin(glm::radians(-rotateSpeed));
-			direction.z = -camera_transform[0] * sin(glm::radians(-rotateSpeed)) + camera_transform[2] * cos(glm::radians(-rotateSpeed));
-			direction.y = 2.0f;
-			camera_transform = direction;
-		}
-		//cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 58.0f;
-		//cameraFront -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * 8.0f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
@@ -234,7 +184,7 @@ void error_callback(int error, const char* description) {
 void initOpenGLProgram(GLFWwindow* window) {
 	initShaders();
 	//************Tutaj umieszczaj kod, który należy wykonać raz, na początku programu************
-	glClearColor(0.5, 0.12, 0.9, 1); //Ustaw kolor czyszczenia bufora kolorów
+	glClearColor(0.3, 0.8, 1, 1); //Ustaw kolor czyszczenia bufora kolorów
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -242,7 +192,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
 
-	tex = readTexture((char*)"bricks.png");
+	tex = readTexture((char*)"ground.png");
 }
 
 
@@ -255,14 +205,18 @@ void freeOpenGLProgram(GLFWwindow* window) {
 
 //Procedura rysująca zawartość sceny
 void drawScene(GLFWwindow* window) {
-	//************Tutaj umieszczaj kod rysujący obraz******************l
+	//************Tutaj umieszczaj kod rysujący obraz******************
+
+	if (!collision)
+		collision = false;
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
 	glm::mat4 M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
 	M = glm::translate(M, speed_vector);
 	M = glm::rotate(M, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
 	M = glm::scale(M, glm::vec3(0.8f, 0.3f, 0.7f));
 
-	printf("pitch: %f, yaw: %f\n", pitch, yaw);
+	//printf("pitch: %f, yaw: %f, angle: %f\n", pitch, yaw, angle);
 
 	//namierzanie obiektu
 	Transformed = M * Position;
@@ -278,8 +232,6 @@ void drawScene(GLFWwindow* window) {
 
 	//Opis modelu
 	//Tablica współrzędnych wierzchołków
-	//Opis modelu
-	//Tablica współrzędnych wierzchołków
 	float verts[] = {
 	  1.0f,-1.0f,0.0f,1.0f, //A
 	 -1.0f, 1.0f,0.0f,1.0f, //B
@@ -292,13 +244,13 @@ void drawScene(GLFWwindow* window) {
 
 	//Tablica współrzędnych teksturowania
 	float texCoords[] = {
-	  1.0f, 0.0f,   //A
-	  0.0f, 1.0f,    //B
+	  100.0f, 0.0f,   //A
+	  0.0f, 100.0f,    //B
 	  0.0f, 0.0f,    //C
 
-	  1.0f, 0.0f,    //A
-	  1.0f, 1.0f,    //D
-	  0.0f, 1.0f,    //B
+	  10.0f, 0.0f,    //A
+	  100.0f, 100.0f,    //D
+	  0.0f, 100.0f,    //B
 	};
 
 	//Liczba wierzchołków w tablicy
@@ -308,13 +260,13 @@ void drawScene(GLFWwindow* window) {
 	spTextured->use();
 	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V));
-	glm::mat4 M2 = glm::mat4(1.0f);
-	M2 = glm::rotate(M2, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
-	M2 = glm::rotate(M2, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-	M2 = glm::translate(M2, glm::vec3(0.0f, 0.0f, 0.5f));
-	M2 = glm::scale(M2, glm::vec3(10.0f, 50.0f, 10.0f));
+	glm::mat4 M_floor = glm::mat4(1.0f);
+	M_floor = glm::rotate(M_floor, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
+	M_floor = glm::rotate(M_floor, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
+	M_floor = glm::translate(M_floor, glm::vec3(0.0f, 0.0f, 0.5f));
+	M_floor = glm::scale(M_floor, glm::vec3(1000.0f, 1000.0f, 1000.0f));
 
-	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M2));
+	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M_floor));
 
 	glEnableVertexAttribArray(spTextured->a("vertex"));
 	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, verts);
@@ -323,6 +275,10 @@ void drawScene(GLFWwindow* window) {
 	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords);
 
 	glActiveTexture(GL_TEXTURE0);
+	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glGenerateMipmap(GL_TEXTURE_2D);	
+	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(spLambertTextured->u("tex"), 0);
 
@@ -331,9 +287,7 @@ void drawScene(GLFWwindow* window) {
 	glDisableVertexAttribArray(spTextured->a("vertex"));
 	glDisableVertexAttribArray(spTextured->a("texCoord"));
 
-
 	spLambert->use(); //Aktywuj program cieniujący
-
 
 	glUniform4f(spLambert->u("color"), 0, 1, 0, 1); //Ustaw kolor rysowania obiektu
 	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
@@ -341,8 +295,6 @@ void drawScene(GLFWwindow* window) {
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
 
 	Models::cube.drawSolid(); //Narysuj obiekt
-
-
 
 	glm::mat4 M_wieza = glm::translate(M, glm::vec3(0.0f, 1.5f, 0.0f)); //...i macierz przesunięcia
 	M_wieza = glm::scale(M_wieza, glm::vec3(1.0f, 1.0f, 1.0f));
@@ -358,23 +310,22 @@ void drawScene(GLFWwindow* window) {
 	glm::vec3 lufa_cords = glm::vec3(1.2f, 0.2f, 0.0f);
 
 	glm::mat4 M_lufa = glm::translate(M_wieza, lufa_cords); //...i macierz przesunięcia
-	//M_lufa = glm::rotate(M_lufa, glm::radians(pitch), glm::vec3(0.0f, 1.0f, 0.0f));
 	M_lufa = glm::scale(M_lufa, glm::vec3(0.4f, 0.1f, 0.1f));
-
 
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_lufa)); //Załaduj do programu cieniującego macierz modelu
 
 	Models::cube.drawSolid(); //Narysuj obiekt
+	if (!collision)
+	{
+		glUniform4f(spLambert->u("color"), 1, 1, 0, 1);
+		glm::mat4 M_skrzynia = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
+		M_skrzynia = glm::translate(M_skrzynia, glm::vec3(4.0f, 0.0f, -4.0f));
+		M_skrzynia = glm::scale(M_skrzynia, glm::vec3(0.5f, 1.0f, 0.5f));
 
-	glUniform4f(spLambert->u("color"), 1, 1, 0, 1);
-	glm::mat4 M_skrzynia = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-	M_skrzynia = glm::scale(M_skrzynia, glm::vec3(0.5f, 0.5f, 0.5f));
-	M_skrzynia = glm::translate(M_skrzynia, glm::vec3(8.0f, 0.0f, -8.0f));
+		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_skrzynia)); //Załaduj do programu cieniującego macierz modelu
 
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_skrzynia)); //Załaduj do programu cieniującego macierz modelu
-
-	Models::cube.drawSolid(); //Narysuj obiekt
-
+		Models::cube.drawSolid(); //Narysuj obiekt
+	}
 	glUniform4f(spLambert->u("color"), 0, 1, 0, 1);
 
 	if (shoot_ball == true)
@@ -385,15 +336,39 @@ void drawScene(GLFWwindow* window) {
 			fisrt_frame_shot = false;
 		}
 
-
+		float radius = 0.1f;
 		glm::mat4 Mp1 = glm::translate(M_copy, lufa_cords + glm::vec3(shoot[0] - 1.0f, shoot[1], shoot[2])); //...i macierz przesunięcia
-		Mp1 = glm::scale(Mp1, glm::vec3(0.2f, 0.2f, 0.2f));
+		Mp1 = glm::scale(Mp1, glm::vec3(1 / 0.8f, 1 / 0.3f, 1 / 0.7f));
+		Mp1 = glm::scale(Mp1, glm::vec3(radius, radius, radius));
 		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp1));  //Załadowanie macierzy modelu do programu cieniującego
 		glUniform4f(spLambert->u("color"), 0, 1, 0, 1); //Planeta jest zielona
 
 		Models::sphere.drawSolid(); //Narysowanie obiektu
-	}
 
+		glm::vec4 bullet_position = Mp1 * Position;	
+		// get center point circle first 
+		glm::vec2 center(bullet_position.x, bullet_position.z);
+
+
+		// calculate AABB info (center, half-extents)
+		glm::vec2 aabb_half_extents(glm::vec2(1.0f, 1.0f) / 2.0f);
+		glm::vec2 aabb_center(4.0f,-4.0f);
+
+		glm::vec2 difference = center - aabb_center;
+		
+		glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
+
+		// add clamped value to AABB_center and we get the value of box closest to circle
+		glm::vec2 closest = aabb_center + clamped;
+
+		// retrieve vector between center circle and closest point AABB and check if length <= radius
+		difference = closest - center;
+
+		if (glm::length(difference) < radius)
+		{
+			collision = true;
+		}
+	}
 	glfwSwapBuffers(window); //Skopiuj bufor tylny do bufora przedniego
 }
 
