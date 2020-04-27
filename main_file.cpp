@@ -42,7 +42,14 @@ float pitch = 0.0f;
 float yaw_limit_down = 0.0f;
 float yaw_limit_up = 15.0f;
 
+const float movingSpeed = 0.1f;
+const float rotateSpeed = PI / 2;
+
 bool collision = false;
+bool w_press = false;
+bool s_press = false;
+bool a_press = false;
+bool d_press = false;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, 7.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -117,37 +124,28 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 //Procedura obsługi klawiatury
 void key_callback(GLFWwindow* window, int key,
 	int scancode, int action, int mods) {
-
-	const float movingSpeed = 0.25f; // adjust accordingly
-	const float rotateSpeed = PI / 2;
 	const float cameraSpeed = 0.001f;
 
+
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-	{
-		speed -= movingSpeed;
-		speed_vector.z -= movingSpeed * sin(angle * PI / 180);
-		speed_vector.x += movingSpeed * cos(angle * PI / 180);
-
-	}
+		w_press = true;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE)
+		w_press = false;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		speed += movingSpeed;
-		speed_vector.z += movingSpeed * sin(angle * PI / 180);
-		speed_vector.x -= movingSpeed * cos(angle * PI / 180);
-	}
-
+		s_press = true;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE)
+		s_press = false;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		angle += rotateSpeed;
-	}
+		a_press = true;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE)
+		a_press = false;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-	{
-		angle -= rotateSpeed;
-	}
+		d_press = true;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)
+		d_press = false;
+
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-	{
 		shoot_ball = true;
-	}
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		freeOpenGLProgram(window);
@@ -209,6 +207,22 @@ void drawScene(GLFWwindow* window) {
 
 	if (!collision)
 		collision = false;
+	if (w_press) {
+		speed -= movingSpeed;
+		speed_vector.z -= movingSpeed * sin(angle * PI / 180);
+		speed_vector.x += movingSpeed * cos(angle * PI / 180);
+	}
+	if (s_press) {
+		speed += movingSpeed;
+		speed_vector.z += movingSpeed * sin(angle * PI / 180);
+		speed_vector.x -= movingSpeed * cos(angle * PI / 180);
+	}
+	if (a_press) {
+		angle += rotateSpeed;
+	}
+	if (d_press) {
+		angle -= rotateSpeed;
+	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
 	glm::mat4 M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
