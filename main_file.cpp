@@ -202,14 +202,14 @@ void drawScene(GLFWwindow* window) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
 
-	tank.move(speed_vector, angle, pitch, yaw);
-
 	tank_position = tank.getPosition();
 	cameraFront = glm::vec3(tank_position[0], tank_position[1], tank_position[2]);
 	cameraPos = camera_transform + cameraFront;
-
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
+
+	tank.move(speed_vector, angle, pitch, yaw);
+
 
 
 	//wspolrzedne
@@ -281,9 +281,7 @@ void drawScene(GLFWwindow* window) {
 	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(tank.getM())); //Załaduj do programu cieniującego macierz modelu
 
-	Models::cube.drawSolid(); //Narysuj obiekt
 
-	
 	if (!bullet.hasCollision())
 	{
 		box.draw();

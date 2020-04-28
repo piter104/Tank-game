@@ -20,7 +20,6 @@ bool Bullet::shooting(bool shoot_ball)
 
 void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords)
 {
-	
 	if (first_frame_shot == true) {
 		M_copy = M_wieza;
 		first_frame_shot = false;
@@ -39,7 +38,6 @@ void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords)
 void Bullet::collision_detector()
 {
 	glm::vec4 bullet_position = Mp1 * Position;
-
 	// get center point circle first 
 	glm::vec2 center(bullet_position.x, bullet_position.z);
 

@@ -27,8 +27,8 @@ private:
 	glm::mat4 M_copy;
 
 	void collision_detector();
-public:
 
+public:
 	void generate(glm::mat4 M_wieza, glm::vec3 lufa_cords);
 	bool shooting(bool shoot_ball);
 	bool hasCollision();
