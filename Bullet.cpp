@@ -41,19 +41,19 @@ void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size
 	glm::vec4 bullet_position = Mp1 * Position;
 
 	// get center point circle first 
-	glm::vec2 center(bullet_position.x, bullet_position.z);
+	glm::vec3 center(bullet_position);
 
 
 	// calculate AABB info (center, half-extents)
-	glm::vec2 aabb_half_extents( glm::vec2(object_size.x, object_size.z)/ 2.0f);
-	glm::vec2 aabb_center(object_position.x, object_position.z);
+	glm::vec3 aabb_half_extents( glm::vec3(object_size/ 2.0f));
+	glm::vec3 aabb_center(object_position);
 
-	glm::vec2 difference = center - aabb_center;
+	glm::vec3 difference = center - aabb_center;
 
-	glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
+	glm::vec3 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
 
 	// add clamped value to AABB_center and we get the value of box closest to circle
-	glm::vec2 closest = aabb_center + clamped;
+	glm::vec3 closest = aabb_center + clamped;
 
 	// retrieve vector between center circle and closest point AABB and check if length <= radius
 	difference = closest - center;

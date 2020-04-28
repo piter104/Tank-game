@@ -21,6 +21,22 @@ glm::mat4 Tank::getM()
 	return M;
 }
 
+
+
+bool Tank::collision_detector(glm::vec3 object_position, glm::vec3 object_size)
+{
+	// Collision x
+	bool collisionX = object_position.x + object_size.x >= tank_position.x &&
+		tank_position.x + tank_size.x >= object_position.x;
+
+	// Collision z
+	bool collisionY = object_position.z + object_size.z >= tank_position.z &&
+		tank_position.z + tank_size.z >= object_position.z;
+
+	// Collision only if on both axes
+	return collisionX && collisionY;
+}
+
 void Tank::move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm::vec3 &camera_transform, glm::vec3 &cameraFront, glm::vec3 &cameraPos, glm::vec3 cameraUp)
 {
 	glm::mat4 M = glm::mat4(1.0f);

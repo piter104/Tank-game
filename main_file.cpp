@@ -189,14 +189,14 @@ void drawScene(GLFWwindow* window) {
 
 	shoot_ball = bullet.shooting(shoot_ball);
 
-	if (!bullet.hasCollision(box.getPosition(), box.getSize()) && box.is_destroyed() == false)
+
+	if (!bullet.hasCollision(box.getPosition(), box.getSize()) && !tank.collision_detector(box.getPosition(), box.getSize()) && box.is_destroyed() == false)
 	{
 		box.draw();
 	}
 	else
 	{
 		box.destroy();
-
 	}
 
 	glUniform4f(spLambert->u("color"), 0, 1, 0, 1);

@@ -2,6 +2,7 @@
 
 void Box::destroy()
 {
+	box_size = glm::vec3(0.0f, 0.0f, 0.0f);
 	destroyed = true;
 }
 
