@@ -20,9 +20,11 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 
 #include "Bullet.h"
 #include "Tank.h"
+#include "Box.h"
 
 Bullet bullet = Bullet();
 Tank tank = Tank();
+Box box = Box();
 
 float speed = 0; //predkosc czołgu
 
@@ -284,14 +286,7 @@ void drawScene(GLFWwindow* window) {
 	
 	if (!bullet.hasCollision())
 	{
-		glUniform4f(spLambert->u("color"), 1, 1, 0, 1);
-		glm::mat4 M_skrzynia = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-		M_skrzynia = glm::translate(M_skrzynia, glm::vec3(4.0f, 0.0f, -4.0f));
-		M_skrzynia = glm::scale(M_skrzynia, glm::vec3(0.5f, 1.0f, 0.5f));
-
-		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_skrzynia)); //Załaduj do programu cieniującego macierz modelu
-
-		Models::cube.drawSolid(); //Narysuj obiekt
+		box.draw();
 	}
 	glUniform4f(spLambert->u("color"), 0, 1, 0, 1);
 
