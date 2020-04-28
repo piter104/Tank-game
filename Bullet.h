@@ -21,6 +21,8 @@ private:
 	bool first_frame_shot = true;
 	bool collision;
 
+	int shoot_length = 100;
+
 	glm::vec3 shoot = glm::vec3(1.0f, 0.5f, 0.0f); //spawn kuli
 	glm::vec3  bullet_vector = glm::vec3(0.3f, -0.01, 0.0f);
 	glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);

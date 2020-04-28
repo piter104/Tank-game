@@ -26,7 +26,6 @@ Bullet bullet = Bullet();
 Tank tank = Tank();
 Box box = Box();
 
-float speed = 0; //predkosc czołgu
 
 float angle = 90.0f;
 bool shoot_ball = false;
@@ -184,12 +183,10 @@ void drawScene(GLFWwindow* window) {
 
 
 	if (w_press) {
-		speed -= movingSpeed;
 		speed_vector.z -= movingSpeed * sin(angle * PI / 180);
 		speed_vector.x += movingSpeed * cos(angle * PI / 180);
 	}
 	if (s_press) {
-		speed += movingSpeed;
 		speed_vector.z += movingSpeed * sin(angle * PI / 180);
 		speed_vector.x -= movingSpeed * cos(angle * PI / 180);
 	}
@@ -199,21 +196,16 @@ void drawScene(GLFWwindow* window) {
 	if (d_press) {
 		angle -= rotateSpeed;
 	}
-
+	tank_position = tank.getPosition();
+	printf("%f, %f, %f, %f, %f, %f\n", cameraFront.x, cameraFront.y, cameraFront.z, cameraPos.x, cameraPos.y, cameraPos.z);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
 
-	tank_position = tank.getPosition();
-	cameraFront = glm::vec3(tank_position[0], tank_position[1], tank_position[2]);
-	cameraPos = camera_transform + cameraFront;
+	
+	tank.move(speed_vector, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp);
+
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 
-	tank.move(speed_vector, angle, pitch, yaw);
-
-
-
-	//wspolrzedne
-	//printf("%f, %f, %f, %f\n", Transformed[0], Transformed[1], Transformed[2], Transformed[3]);
 
 	//Opis modelu
 	//Tablica współrzędnych wierzchołków
@@ -281,11 +273,18 @@ void drawScene(GLFWwindow* window) {
 	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(tank.getM())); //Załaduj do programu cieniującego macierz modelu
 
+	shoot_ball = bullet.shooting(shoot_ball);
 
-	if (!bullet.hasCollision(box.getPosition(), box.getSize()))
+	if (!bullet.hasCollision(box.getPosition(), box.getSize()) && box.is_destroyed() == false)
 	{
 		box.draw();
 	}
+	else
+	{
+		box.destroy();
+
+	}
+
 	glUniform4f(spLambert->u("color"), 0, 1, 0, 1);
 
 
@@ -332,7 +331,6 @@ int main(void)
 	//Główna pętla
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
-		shoot_ball = bullet.shooting(shoot_ball);
 		drawScene(window); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
 	}

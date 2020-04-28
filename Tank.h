@@ -27,7 +27,7 @@ public:
 	glm::vec4 getPosition();
 	glm::mat4 getM_wieza();
 	glm::mat4 getM();
-	void move(glm::vec3 speed_vector, float angle, float pitch, float yaw);
+	void move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm::vec3& camera_transform, glm::vec3& cameraFront, glm::vec3& cameraPos, glm::vec3 cameraUp);
 };
 
 #endif

@@ -3,7 +3,7 @@
 
 bool Bullet::shooting(bool shoot_ball)
 {
-	if (shoot_ball == true && counter < 100)
+	if (shoot_ball == true && counter < shoot_length)
 	{
 		shoot = shoot + bullet_vector;
 		counter += 1;
@@ -12,6 +12,7 @@ bool Bullet::shooting(bool shoot_ball)
 	else
 	{
 		shoot = glm::vec3(1.0f, 0.0f, 0.0f);
+		collision = false;
 		counter = 0;
 		first_frame_shot = true;
 		return false;
@@ -20,8 +21,6 @@ bool Bullet::shooting(bool shoot_ball)
 
 void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords)
 {
-	if (!collision)
-	{
 		if (first_frame_shot == true) {
 			M_copy = M_wieza;
 			first_frame_shot = false;
@@ -34,7 +33,7 @@ void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords)
 		glUniform4f(spLambert->u("color"), 0, 1, 0, 1); //Planeta jest zielona
 
 		Models::sphere.drawSolid(); //Narysowanie obiektu
-	}
+
 }
 
 void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size)
@@ -59,11 +58,14 @@ void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size
 	// retrieve vector between center circle and closest point AABB and check if length <= radius
 	difference = closest - center;
 
-	if ((glm::length(difference) < radius) || collision)
+	if (glm::length(difference) < radius)
 	{
+		counter = shoot_length;
 		collision = true;
+		Mp1 = glm::translate(M_copy, glm::vec3(0.0f, 0.0f, 0.0f));
 	}
-	else {
+	else 
+	{
 		collision = false;
 	}
 }
