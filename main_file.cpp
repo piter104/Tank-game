@@ -282,7 +282,7 @@ void drawScene(GLFWwindow* window) {
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(tank.getM())); //Załaduj do programu cieniującego macierz modelu
 
 
-	if (!bullet.hasCollision())
+	if (!bullet.hasCollision(box.getPosition(), box.getSize()))
 	{
 		box.draw();
 	}

@@ -20,31 +20,34 @@ bool Bullet::shooting(bool shoot_ball)
 
 void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords)
 {
-	if (first_frame_shot == true) {
-		M_copy = M_wieza;
-		first_frame_shot = false;
+	if (!collision)
+	{
+		if (first_frame_shot == true) {
+			M_copy = M_wieza;
+			first_frame_shot = false;
+		}
+
+		Mp1 = glm::translate(M_copy, lufa_cords + glm::vec3(shoot[0] - 1.0f, shoot[1], shoot[2])); //...i macierz przesuniêcia
+		Mp1 = glm::scale(Mp1, glm::vec3(1 / 0.8f, 1 / 0.3f, 1 / 0.7f));
+		Mp1 = glm::scale(Mp1, glm::vec3(radius, radius, radius));
+		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp1));  //Za³adowanie macierzy modelu do programu cieniuj¹cego
+		glUniform4f(spLambert->u("color"), 0, 1, 0, 1); //Planeta jest zielona
+
+		Models::sphere.drawSolid(); //Narysowanie obiektu
 	}
-	
-	Mp1 = glm::translate(M_copy, lufa_cords + glm::vec3(shoot[0] - 1.0f, shoot[1], shoot[2])); //...i macierz przesuniêcia
-	Mp1 = glm::scale(Mp1, glm::vec3(1 / 0.8f, 1 / 0.3f, 1 / 0.7f));
-	Mp1 = glm::scale(Mp1, glm::vec3(radius, radius, radius));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp1));  //Za³adowanie macierzy modelu do programu cieniuj¹cego
-	glUniform4f(spLambert->u("color"), 0, 1, 0, 1); //Planeta jest zielona
-
-	Models::sphere.drawSolid(); //Narysowanie obiektu
-
 }
 
-void Bullet::collision_detector()
+void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size)
 {
 	glm::vec4 bullet_position = Mp1 * Position;
+
 	// get center point circle first 
 	glm::vec2 center(bullet_position.x, bullet_position.z);
 
 
 	// calculate AABB info (center, half-extents)
-	glm::vec2 aabb_half_extents(glm::vec2(1.0f, 1.0f) / 2.0f);
-	glm::vec2 aabb_center(4.0f, -4.0f);
+	glm::vec2 aabb_half_extents( glm::vec2(object_size.x, object_size.z)/ 2.0f);
+	glm::vec2 aabb_center(object_position.x, object_position.z);
 
 	glm::vec2 difference = center - aabb_center;
 
@@ -65,8 +68,8 @@ void Bullet::collision_detector()
 	}
 }
 
-bool Bullet::hasCollision()
+bool Bullet::hasCollision(glm::vec3 object_position, glm::vec3 object_size)
 {
-	collision_detector();
+	collision_detector(object_position, object_size);
 	return collision;
 }

@@ -20,6 +20,7 @@ private:
 	glm::mat4 M_wieza = glm::mat4(1.0f);
 	glm::vec3 lufa_cords = glm::vec3(1.2f, 0.2f, 0.0f);
 	glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
+	glm::vec4 tank_position = glm::vec4(glm::vec3(0.0f), 1.0f);
 
 public:
 	glm::vec3 getLufa_cords();

@@ -20,18 +20,19 @@ private:
 	int counter = 0;
 	bool first_frame_shot = true;
 	bool collision;
+
 	glm::vec3 shoot = glm::vec3(1.0f, 0.5f, 0.0f); //spawn kuli
 	glm::vec3  bullet_vector = glm::vec3(0.3f, -0.01, 0.0f);
 	glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
 	glm::mat4 Mp1;
 	glm::mat4 M_copy;
 
-	void collision_detector();
+	void collision_detector(glm::vec3 object_position, glm::vec3 object_size);
 
 public:
 	void generate(glm::mat4 M_wieza, glm::vec3 lufa_cords);
 	bool shooting(bool shoot_ball);
-	bool hasCollision();
+	bool hasCollision(glm::vec3 object_position, glm::vec3 object_size);
 };
 
 #endif
