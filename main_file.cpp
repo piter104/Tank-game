@@ -21,10 +21,14 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "Bullet.h"
 #include "Tank.h"
 #include "Box.h"
+#include "Floor.h"
+#include "Texture.h"
 
 Bullet bullet = Bullet();
 Tank tank = Tank();
 Box box = Box();
+Texture floor_texture = Texture();
+Floor ground = Floor();
 
 
 float angle = 90.0f;
@@ -56,35 +60,10 @@ glm::vec3 speed_vector = glm::vec3(0.0f, 0.0f, 0.0f);
 
 glm::vec3 camera_transform = glm::vec3(0.0f, 2.0f, 7.0f);
 
-glm::mat4 M_copy;
 
-GLuint tex; //Uchwyt – deklaracja globalna
 
 void freeOpenGLProgram(GLFWwindow* window);
 
-
-GLuint readTexture(char* filename) {
-	GLuint tex;
-	glActiveTexture(GL_TEXTURE0);
-
-	//Wczytanie do pamięci komputera
-	std::vector<unsigned char> image;   //Alokuj wektor do wczytania obrazka
-	unsigned width, height;   //Zmienne do których wczytamy wymiary obrazka
-	//Wczytaj obrazek
-	unsigned error = lodepng::decode(image, width, height, filename);
-
-	//Import do pamięci karty graficznej
-	glGenTextures(1, &tex); //Zainicjuj jeden uchwyt
-	glBindTexture(GL_TEXTURE_2D, tex); //Uaktywnij uchwyt
-	//Wczytaj obrazek do pamięci KG skojarzonej z uchwytem
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, (unsigned char*)image.data());
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	return tex;
-}
 
 //Procedura obsługi myszki
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -165,22 +144,21 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetCursorPosCallback(window, mouse_callback); //Zarejestruj procedurę obsługi myszki
 
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
-
-	tex = readTexture((char*)"ground.png");
+	
+	floor_texture.readTexture((char*)"ground.png");
 }
 
 
 //Zwolnienie zasobów zajętych przez program
 void freeOpenGLProgram(GLFWwindow* window) {
 	freeShaders();
-	glDeleteTextures(1, &tex);
+	glDeleteTextures(1, &floor_texture.tex);
 	//************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************
 }
 
 //Procedura rysująca zawartość sceny
 void drawScene(GLFWwindow* window) {
 	//************Tutaj umieszczaj kod rysujący obraz******************
-
 
 	if (w_press) {
 		speed_vector.z -= movingSpeed * sin(angle * PI / 180);
@@ -199,79 +177,15 @@ void drawScene(GLFWwindow* window) {
 	tank_position = tank.getPosition();
 	printf("%f, %f, %f, %f, %f, %f\n", cameraFront.x, cameraFront.y, cameraFront.z, cameraPos.x, cameraPos.y, cameraPos.z);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
-
 	
 	tank.move(speed_vector, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp);
 
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 
-
-	//Opis modelu
-	//Tablica współrzędnych wierzchołków
-	float verts[] = {
-	  1.0f,-1.0f,0.0f,1.0f, //A
-	 -1.0f, 1.0f,0.0f,1.0f, //B
-	 -1.0f,-1.0f,0.0f,1.0f, //C
-
-	  1.0f,-1.0f,0.0f,1.0f, //A
-	  1.0f, 1.0f,0.0f,1.0f, //D
-	 -1.0f, 1.0f,0.0f,1.0f, //B
-	};
-
-	//Tablica współrzędnych teksturowania
-	float texCoords[] = {
-	  100.0f, 0.0f,   //A
-	  0.0f, 100.0f,    //B
-	  0.0f, 0.0f,    //C
-
-	  10.0f, 0.0f,    //A
-	  100.0f, 100.0f,    //D
-	  0.0f, 100.0f,    //B
-	};
-
-	//Liczba wierzchołków w tablicy
-	int vertexCount = 6;
-
-	//Kod rysujący
-	spTextured->use();
-	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V));
-
-	glm::mat4 M_floor = glm::mat4(1.0f);
-
-	M_floor = glm::rotate(M_floor, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
-	M_floor = glm::rotate(M_floor, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
-	M_floor = glm::translate(M_floor, glm::vec3(0.0f, 0.0f, 0.5f));
-	M_floor = glm::scale(M_floor, glm::vec3(1000.0f, 1000.0f, 1000.0f));
-
-	glUniformMatrix4fv(spTextured->u("M"), 1, false, glm::value_ptr(M_floor));
-
-	glEnableVertexAttribArray(spTextured->a("vertex"));
-	glVertexAttribPointer(spTextured->a("vertex"), 4, GL_FLOAT, false, 0, verts);
-
-	glEnableVertexAttribArray(spTextured->a("texCoord"));
-	glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords);
-
-	glActiveTexture(GL_TEXTURE0);
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glUniform1i(spLambertTextured->u("tex"), 0);
-
-	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-
-	glDisableVertexAttribArray(spTextured->a("vertex"));
-	glDisableVertexAttribArray(spTextured->a("texCoord"));
+	ground.draw_floor(P, V,floor_texture.tex);
 
 	spLambert->use(); //Aktywuj program cieniujący
-
-	glUniform4f(spLambert->u("color"), 0, 1, 0, 1); //Ustaw kolor rysowania obiektu
-	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
-	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(tank.getM())); //Załaduj do programu cieniującego macierz modelu
 
 	shoot_ball = bullet.shooting(shoot_ball);
 
