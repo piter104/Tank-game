@@ -17,22 +17,16 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 
 #define GLM_FORCE_RADIANS
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <stdlib.h>
-#include <stdio.h>
-#include "constants.h"
-#include "allmodels.h"
-#include "lodepng.h"
-#include "shaderprogram.h"
 
-float speed = 0; //predkosc czajnika
-glm::vec3 shoot = glm::vec3(1.0f, 0.5f, 0.0f); //spawn kuli
+#include "Bullet.h"
+#include "Tank.h"
+
+Bullet bullet = Bullet();
+Tank tank = Tank();
+
+float speed = 0; //predkosc czołgu
+
 float angle = 90.0f;
-//float lufa_angle = 90.0f
 bool shoot_ball = false;
 bool fisrt_frame_shot = true;
 float lastX = 400;
@@ -45,7 +39,6 @@ float yaw_limit_up = 15.0f;
 const float movingSpeed = 0.1f;
 const float rotateSpeed = PI / 2;
 
-bool collision = false;
 bool w_press = false;
 bool s_press = false;
 bool a_press = false;
@@ -56,9 +49,7 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
-glm::vec4 Transformed = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
-
-glm::vec3  bullet_vector = glm::vec3(0.3f, -0.01, 0.0f);
+glm::vec4 tank_position = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
 
 glm::vec3 speed_vector = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -114,11 +105,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	if (yaw < yaw_limit_down)
 		yaw = yaw_limit_down;
 
-		glm::vec3 direction;
-		direction.x = camera_transform[0] * cos(glm::radians(xoffset)) + camera_transform[2] * sin(glm::radians(xoffset));
-		direction.z = -camera_transform[0] * sin(glm::radians(xoffset)) + camera_transform[2] * cos(glm::radians(xoffset));
-		direction.y = 2.0f;
-		camera_transform = direction;
+	glm::vec3 direction;
+	direction.x = camera_transform[0] * cos(glm::radians(xoffset)) + camera_transform[2] * sin(glm::radians(xoffset));
+	direction.z = -camera_transform[0] * sin(glm::radians(xoffset)) + camera_transform[2] * cos(glm::radians(xoffset));
+	direction.y = 2.0f;
+	camera_transform = direction;
 }
 
 //Procedura obsługi klawiatury
@@ -156,22 +147,6 @@ void key_callback(GLFWwindow* window, int key,
 	}
 }
 
-int shooting(int counter)
-{
-	if (shoot_ball == true && counter < 100)
-	{
-		shoot = shoot + bullet_vector;
-		counter += 1;
-	}
-	else
-	{
-		shoot = glm::vec3(1.0f, 0.0f, 0.0f);
-		shoot_ball = false;
-		counter = 0;
-		fisrt_frame_shot = true;
-	}
-	return counter;
-}
 
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
@@ -205,8 +180,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 void drawScene(GLFWwindow* window) {
 	//************Tutaj umieszczaj kod rysujący obraz******************
 
-	if (!collision)
-		collision = false;
+
 	if (w_press) {
 		speed -= movingSpeed;
 		speed_vector.z -= movingSpeed * sin(angle * PI / 180);
@@ -225,16 +199,11 @@ void drawScene(GLFWwindow* window) {
 	}
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
-	glm::mat4 M = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
-	M = glm::translate(M, speed_vector);
-	M = glm::rotate(M, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
-	M = glm::scale(M, glm::vec3(0.8f, 0.3f, 0.7f));
 
-	//printf("pitch: %f, yaw: %f, angle: %f\n", pitch, yaw, angle);
+	tank.move(speed_vector, angle, pitch, yaw);
 
-	//namierzanie obiektu
-	Transformed = M * Position;
-	cameraFront = glm::vec3(Transformed[0], Transformed[1], Transformed[2]);
+	tank_position = tank.getPosition();
+	cameraFront = glm::vec3(tank_position[0], tank_position[1], tank_position[2]);
 	cameraPos = camera_transform + cameraFront;
 
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
@@ -274,7 +243,9 @@ void drawScene(GLFWwindow* window) {
 	spTextured->use();
 	glUniformMatrix4fv(spTextured->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spTextured->u("V"), 1, false, glm::value_ptr(V));
+
 	glm::mat4 M_floor = glm::mat4(1.0f);
+
 	M_floor = glm::rotate(M_floor, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
 	M_floor = glm::rotate(M_floor, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi X
 	M_floor = glm::translate(M_floor, glm::vec3(0.0f, 0.0f, 0.5f));
@@ -291,7 +262,7 @@ void drawScene(GLFWwindow* window) {
 	glActiveTexture(GL_TEXTURE0);
 	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glGenerateMipmap(GL_TEXTURE_2D);	
+	glGenerateMipmap(GL_TEXTURE_2D);
 	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(spLambertTextured->u("tex"), 0);
@@ -306,30 +277,12 @@ void drawScene(GLFWwindow* window) {
 	glUniform4f(spLambert->u("color"), 0, 1, 0, 1); //Ustaw kolor rysowania obiektu
 	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P)); //Załaduj do programu cieniującego macierz rzutowania
 	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V)); //Załaduj do programu cieniującego macierz widoku
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M)); //Załaduj do programu cieniującego macierz modelu
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(tank.getM())); //Załaduj do programu cieniującego macierz modelu
 
 	Models::cube.drawSolid(); //Narysuj obiekt
 
-	glm::mat4 M_wieza = glm::translate(M, glm::vec3(0.0f, 1.5f, 0.0f)); //...i macierz przesunięcia
-	M_wieza = glm::scale(M_wieza, glm::vec3(1.0f, 1.0f, 1.0f));
-	M_wieza = glm::rotate(M_wieza, glm::radians(90.0f - angle), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnóż macierz modelu razy macierz obrotu o kąt angle wokół osi Y
-	M_wieza = glm::rotate(M_wieza, glm::radians(pitch), glm::vec3(0.0f, 1.0f, 0.0f));
-	M_wieza = glm::rotate(M_wieza, glm::radians(yaw), glm::vec3(0.0f, 0.0f, 1.0f));
-
-
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_wieza)); //Załaduj do programu cieniującego macierz modelu
-
-	Models::teapot.drawSolid(); //Narysuj obiekt
-
-	glm::vec3 lufa_cords = glm::vec3(1.2f, 0.2f, 0.0f);
-
-	glm::mat4 M_lufa = glm::translate(M_wieza, lufa_cords); //...i macierz przesunięcia
-	M_lufa = glm::scale(M_lufa, glm::vec3(0.4f, 0.1f, 0.1f));
-
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_lufa)); //Załaduj do programu cieniującego macierz modelu
-
-	Models::cube.drawSolid(); //Narysuj obiekt
-	if (!collision)
+	
+	if (!bullet.hasCollision())
 	{
 		glUniform4f(spLambert->u("color"), 1, 1, 0, 1);
 		glm::mat4 M_skrzynia = glm::mat4(1.0f); //Zainicjuj macierz modelu macierzą jednostkową
@@ -342,47 +295,12 @@ void drawScene(GLFWwindow* window) {
 	}
 	glUniform4f(spLambert->u("color"), 0, 1, 0, 1);
 
+
 	if (shoot_ball == true)
 	{
-
-		if (fisrt_frame_shot == true) {
-			M_copy = M_wieza;
-			fisrt_frame_shot = false;
-		}
-
-		float radius = 0.1f;
-		glm::mat4 Mp1 = glm::translate(M_copy, lufa_cords + glm::vec3(shoot[0] - 1.0f, shoot[1], shoot[2])); //...i macierz przesunięcia
-		Mp1 = glm::scale(Mp1, glm::vec3(1 / 0.8f, 1 / 0.3f, 1 / 0.7f));
-		Mp1 = glm::scale(Mp1, glm::vec3(radius, radius, radius));
-		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp1));  //Załadowanie macierzy modelu do programu cieniującego
-		glUniform4f(spLambert->u("color"), 0, 1, 0, 1); //Planeta jest zielona
-
-		Models::sphere.drawSolid(); //Narysowanie obiektu
-
-		glm::vec4 bullet_position = Mp1 * Position;	
-		// get center point circle first 
-		glm::vec2 center(bullet_position.x, bullet_position.z);
-
-
-		// calculate AABB info (center, half-extents)
-		glm::vec2 aabb_half_extents(glm::vec2(1.0f, 1.0f) / 2.0f);
-		glm::vec2 aabb_center(4.0f,-4.0f);
-
-		glm::vec2 difference = center - aabb_center;
-		
-		glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
-
-		// add clamped value to AABB_center and we get the value of box closest to circle
-		glm::vec2 closest = aabb_center + clamped;
-
-		// retrieve vector between center circle and closest point AABB and check if length <= radius
-		difference = closest - center;
-
-		if (glm::length(difference) < radius)
-		{
-			collision = true;
-		}
+		bullet.generate(tank.getM_wieza(), tank.getLufa_cords());
 	}
+
 	glfwSwapBuffers(window); //Skopiuj bufor tylny do bufora przedniego
 }
 
@@ -417,12 +335,11 @@ int main(void)
 
 	initOpenGLProgram(window); //Operacje inicjujące
 
-	int counter = 0;
 
 	//Główna pętla
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{
-		counter = shooting(counter);
+		shoot_ball = bullet.shooting(shoot_ball);
 		drawScene(window); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
 	}
