@@ -1,5 +1,13 @@
 #include "Box.h"
 
+void Box::setObject(std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors)
+{
+	vertices = out_vertices;
+	uvs = out_uvs;
+	normals = out_normals; // Won't be used at the moment.
+	colors = out_colors;
+}
+
 void Box::destroy()
 {
 	destroyed = true;
@@ -28,7 +36,21 @@ void Box::draw(ShaderProgram *sp)
 		M_skrzynia = glm::translate(M_skrzynia, coordinates);
 		M_skrzynia = glm::scale(M_skrzynia, glm::vec3(0.5f, 1.0f, 0.5f));
 
-		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_skrzynia)); //Za³aduj do programu cieniuj¹cego macierz modelu
+		sp->use();//Aktywacja programu cieniuj¹cego
 
-		Models::cube.drawSolid(); //Narysuj obiekt
+		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_skrzynia));
+
+		glEnableVertexAttribArray(sp->a("vertex"));  //W³¹cz przesy³anie danych do atrybutu vertex
+		glEnableVertexAttribArray(sp->a("color"));
+		glEnableVertexAttribArray(sp->a("normal"));
+		glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices[0]); //Wska¿ tablicê z danymi dla atrybutu vertex
+		glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors[0]);
+		glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
+
+
+		glDrawArrays(GL_TRIANGLES, 0, verts); //Narysuj obiekt
+
+		glDisableVertexAttribArray(sp->a("vertex"));  //Wy³¹cz przesy³anie danych do atrybutu vertex
+		glDisableVertexAttribArray(sp->a("color"));
+		glDisableVertexAttribArray(sp->a("normal"));
 }

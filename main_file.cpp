@@ -234,6 +234,10 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	bullet.setObject(vertices, uvs, normals, colors);
 
+	res = loadOBJ("Crate_LP.obj", vertices, uvs, normals, colors);
+
+	box.setObject(vertices, uvs, normals, colors);
+
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	floor_texture.readTexture((char*)"ground.png");
 }

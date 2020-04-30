@@ -50,7 +50,7 @@ void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords,ShaderProgram *sp)
 		glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
 
 
-		glDrawArrays(GL_TRIANGLES, 0, 7000); //Narysuj obiekt
+		glDrawArrays(GL_TRIANGLES, 0, verts); //Narysuj obiekt
 
 		glDisableVertexAttribArray(sp->a("vertex"));  //Wy³¹cz przesy³anie danych do atrybutu vertex
 		glDisableVertexAttribArray(sp->a("color"));

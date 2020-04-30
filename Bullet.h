@@ -22,6 +22,7 @@ private:
 	bool collision;
 
 	int shoot_length = 100;
+	int verts = 8700;
 
 	glm::vec3 bullet_size = glm::vec3(0.8f, 0.5f, 0.7f);
 	glm::vec3 shoot = glm::vec3(1.0f, 0.5f, 0.0f); //spawn kuli
