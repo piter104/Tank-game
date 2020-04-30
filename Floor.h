@@ -40,6 +40,6 @@ public:
 	//Liczba wierzcho³ków w tablicy
 	int vertexCount = 6;
 
-	void draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex);
+	void draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram *sp);
 	
 };
