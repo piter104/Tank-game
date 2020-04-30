@@ -32,7 +32,7 @@ private:
 	void collision_detector(glm::vec3 object_position, glm::vec3 object_size);
 
 public:
-	void generate(glm::mat4 M_wieza, glm::vec3 lufa_cords);
+	void generate(glm::mat4 M_wieza, glm::vec3 lufa_cords, ShaderProgram *sp);
 	bool shooting(bool shoot_ball);
 	bool hasCollision(glm::vec3 object_position, glm::vec3 object_size);
 };

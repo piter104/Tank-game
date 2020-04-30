@@ -29,7 +29,7 @@ public:
 	glm::mat4 getM_wieza();
 	glm::mat4 getM();
 	bool collision_detector(glm::vec3 object_position, glm::vec3 object_size);
-	void move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm::vec3& camera_transform, glm::vec3& cameraFront, glm::vec3& cameraPos, glm::vec3 cameraUp);
+	void move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm::vec3& camera_transform, glm::vec3& cameraFront, glm::vec3& cameraPos, glm::vec3 cameraUp, ShaderProgram* sp);
 };
 
 #endif

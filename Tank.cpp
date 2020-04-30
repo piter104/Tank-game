@@ -37,7 +37,7 @@ bool Tank::collision_detector(glm::vec3 object_position, glm::vec3 object_size)
 	return collisionX && collisionY;
 }
 
-void Tank::move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm::vec3 &camera_transform, glm::vec3 &cameraFront, glm::vec3 &cameraPos, glm::vec3 cameraUp)
+void Tank::move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm::vec3 &camera_transform, glm::vec3 &cameraFront, glm::vec3 &cameraPos, glm::vec3 cameraUp, ShaderProgram *sp)
 {
 	glm::mat4 M = glm::mat4(1.0f);
 	
@@ -49,9 +49,9 @@ void Tank::move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm
 	cameraPos = camera_transform + cameraFront;
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
-	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M)); //Za³aduj do programu cieniuj¹cego macierz modelu
+	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
+	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M)); //Za³aduj do programu cieniuj¹cego macierz modelu
 
 	Models::cube.drawSolid(); //Narysuj obiekt
 
@@ -62,14 +62,14 @@ void Tank::move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm
 	M_wieza = glm::rotate(M_wieza, glm::radians(yaw), glm::vec3(0.0f, 0.0f, 1.0f));
 	M_wieza = glm::scale(M_wieza, glm::vec3(0.8f, 0.3f, 0.7f));
 
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_wieza)); //Za³aduj do programu cieniuj¹cego macierz modelu
+	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_wieza)); //Za³aduj do programu cieniuj¹cego macierz modelu
 
 	Models::teapot.drawSolid(); //Narysuj obiekt
 
 	glm::mat4 M_lufa = glm::translate(M_wieza, lufa_cords); //...i macierz przesuniêcia
 	M_lufa = glm::scale(M_lufa, glm::vec3(0.4f, 0.1f, 0.1f));
 
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M_lufa)); //Za³aduj do programu cieniuj¹cego macierz modelu
+	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_lufa)); //Za³aduj do programu cieniuj¹cego macierz modelu
 
 	Models::cube.drawSolid(); //Narysuj obiekt
 }

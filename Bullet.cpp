@@ -19,7 +19,7 @@ bool Bullet::shooting(bool shoot_ball)
 	}
 }
 
-void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords)
+void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords,ShaderProgram *sp)
 {
 		if (first_frame_shot == true) {
 			M_copy = M_wieza;
@@ -29,11 +29,13 @@ void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords)
 		Mp1 = glm::translate(M_copy, lufa_cords + glm::vec3(shoot[0] - 1.0f, shoot[1], shoot[2])); //...i macierz przesuniêcia
 		Mp1 = glm::scale(Mp1, glm::vec3(1 / 0.8f, 1 / 0.3f, 1 / 0.7f));
 		Mp1 = glm::scale(Mp1, glm::vec3(radius, radius, radius));
-		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp1));  //Za³adowanie macierzy modelu do programu cieniuj¹cego
-		glUniform4f(spLambert->u("color"), 0, 1, 0, 1); //Planeta jest zielona
+		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(Mp1));  //Za³adowanie macierzy modelu do programu cieniuj¹cego
+		glEnableVertexAttribArray(sp->a("color"));
+		int color[] = { 0,1,0,1 };
+		glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, color);
 
 		Models::sphere.drawSolid(); //Narysowanie obiektu
-
+		glDisableVertexAttribArray(sp->a("color"));
 }
 
 void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size)
@@ -41,19 +43,19 @@ void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size
 	glm::vec4 bullet_position = Mp1 * Position;
 
 	// get center point circle first 
-	glm::vec3 center(bullet_position);
+	glm::vec2 center(bullet_position.x, bullet_position.z);
 
 
 	// calculate AABB info (center, half-extents)
-	glm::vec3 aabb_half_extents( glm::vec3(object_size/ 2.0f));
-	glm::vec3 aabb_center(object_position);
+	glm::vec2 aabb_half_extents( glm::vec2(object_size.x, object_size.z)/ 2.0f);
+	glm::vec2 aabb_center(object_position.x, object_position.z);
 
-	glm::vec3 difference = center - aabb_center;
+	glm::vec2 difference = center - aabb_center;
 
-	glm::vec3 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
+	glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
 
 	// add clamped value to AABB_center and we get the value of box closest to circle
-	glm::vec3 closest = aabb_center + clamped;
+	glm::vec2 closest = aabb_center + clamped;
 
 	// retrieve vector between center circle and closest point AABB and check if length <= radius
 	difference = closest - center;

@@ -52,15 +52,11 @@ bool d_press = false;
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, 7.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
 glm::vec4 tank_position = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
-
 glm::vec3 speed_vector = glm::vec3(0.0f, 0.0f, 0.0f);
-
 glm::vec3 camera_transform = glm::vec3(0.0f, 2.0f, 7.0f);
 
-
+ShaderProgram* sp;
 
 void freeOpenGLProgram(GLFWwindow* window);
 
@@ -135,7 +131,7 @@ void error_callback(int error, const char* description) {
 
 //Procedura inicjująca
 void initOpenGLProgram(GLFWwindow* window) {
-	initShaders();
+	//initShaders();
 	//************Tutaj umieszczaj kod, który należy wykonać raz, na początku programu************
 	glClearColor(0.3, 0.8, 1, 1); //Ustaw kolor czyszczenia bufora kolorów
 	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
@@ -144,14 +140,14 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetCursorPosCallback(window, mouse_callback); //Zarejestruj procedurę obsługi myszki
 
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
-	
+	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	floor_texture.readTexture((char*)"ground.png");
 }
 
 
 //Zwolnienie zasobów zajętych przez program
 void freeOpenGLProgram(GLFWwindow* window) {
-	freeShaders();
+	//freeShaders();
 	glDeleteTextures(1, &floor_texture.tex);
 	//************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************
 }
@@ -178,33 +174,33 @@ void drawScene(GLFWwindow* window) {
 	printf("%f, %f, %f, %f, %f, %f\n", cameraFront.x, cameraFront.y, cameraFront.z, cameraPos.x, cameraPos.y, cameraPos.z);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
 	
-	tank.move(speed_vector, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp);
+	tank.move(speed_vector, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp,sp);
 
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 
-	ground.draw_floor(P, V,floor_texture.tex);
+	ground.draw_floor(P, V,floor_texture.tex,sp);
 
-	spLambert->use(); //Aktywuj program cieniujący
+	sp->use(); //Aktywuj program cieniujący
 
 	shoot_ball = bullet.shooting(shoot_ball);
 
-
-	if (!bullet.hasCollision(box.getPosition(), box.getSize()) && !tank.collision_detector(box.getPosition(), box.getSize()) && box.is_destroyed() == false)
+	if (!bullet.hasCollision(box.getPosition(), box.getSize()) && box.is_destroyed() == false)
 	{
-		box.draw();
+		box.draw(sp);
 	}
 	else
 	{
 		box.destroy();
+
 	}
 
-	glUniform4f(spLambert->u("color"), 0, 1, 0, 1);
+	glUniform4f(sp->u("color"), 0, 1, 0, 1);
 
 
 	if (shoot_ball == true)
 	{
-		bullet.generate(tank.getM_wieza(), tank.getLufa_cords());
+		bullet.generate(tank.getM_wieza(), tank.getLufa_cords(),sp);
 	}
 
 	glfwSwapBuffers(window); //Skopiuj bufor tylny do bufora przedniego
