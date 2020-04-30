@@ -1,5 +1,13 @@
 #include "Bullet.h"
 
+void Bullet::setObject(std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors)
+{
+	vertices = out_vertices;
+	uvs = out_uvs;
+	normals = out_normals; // Won't be used at the moment.
+	colors = out_colors;
+}
+
 
 bool Bullet::shooting(bool shoot_ball)
 {
@@ -27,53 +35,60 @@ void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords,ShaderProgram *sp)
 		}
 
 		Mp1 = glm::translate(M_copy, lufa_cords + glm::vec3(shoot[0] - 1.0f, shoot[1], shoot[2])); //...i macierz przesuniêcia
-		Mp1 = glm::scale(Mp1, glm::vec3(1 / 0.8f, 1 / 0.3f, 1 / 0.7f));
-		Mp1 = glm::scale(Mp1, glm::vec3(radius, radius, radius));
-		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(Mp1));  //Za³adowanie macierzy modelu do programu cieniuj¹cego
-		glEnableVertexAttribArray(sp->a("color"));
-		int color[] = { 0,1,0,1 };
-		glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, color);
+		Mp1 = glm::rotate(Mp1, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		Mp1 = glm::scale(Mp1, glm::vec3(bullet_size));
+		//Mp1 = glm::scale(Mp1, glm::vec3(radius, radius, radius));
+		sp->use();//Aktywacja programu cieniuj¹cego
 
-		Models::sphere.drawSolid(); //Narysowanie obiektu
+		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(Mp1));
+
+		glEnableVertexAttribArray(sp->a("vertex"));  //W³¹cz przesy³anie danych do atrybutu vertex
+		glEnableVertexAttribArray(sp->a("color"));
+		glEnableVertexAttribArray(sp->a("normal"));
+		glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices[0]); //Wska¿ tablicê z danymi dla atrybutu vertex
+		glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors[0]);
+		glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
+
+
+		glDrawArrays(GL_TRIANGLES, 0, 7000); //Narysuj obiekt
+
+		glDisableVertexAttribArray(sp->a("vertex"));  //Wy³¹cz przesy³anie danych do atrybutu vertex
 		glDisableVertexAttribArray(sp->a("color"));
+		glDisableVertexAttribArray(sp->a("normal"));
+
 }
 
-void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size)
+void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size, bool destroyed)
 {
 	glm::vec4 bullet_position = Mp1 * Position;
-
-	// get center point circle first 
-	glm::vec2 center(bullet_position.x, bullet_position.z);
-
-
-	// calculate AABB info (center, half-extents)
-	glm::vec2 aabb_half_extents( glm::vec2(object_size.x, object_size.z)/ 2.0f);
-	glm::vec2 aabb_center(object_position.x, object_position.z);
-
-	glm::vec2 difference = center - aabb_center;
-
-	glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
-
-	// add clamped value to AABB_center and we get the value of box closest to circle
-	glm::vec2 closest = aabb_center + clamped;
-
-	// retrieve vector between center circle and closest point AABB and check if length <= radius
-	difference = closest - center;
-
-	if (glm::length(difference) < radius)
+	// Collision x
+	bool collisionX = object_position.x + object_size.x >= bullet_position.x &&
+		bullet_position.x + bullet_size.x >= object_position.x;
+	// Collision y
+	bool collisionY = object_position.y + object_size.y >= bullet_position.y &&
+		bullet_position.y + bullet_size.y >= object_position.y;
+	// Collison z
+	bool collisionZ = object_position.z + object_size.z >= bullet_position.z &&
+		bullet_position.z + bullet_size.z >= object_position.z;
+	// Collision only if on three axes
+	if (collisionX && collisionY && collisionZ && !destroyed)
 	{
 		counter = shoot_length;
 		collision = true;
 		Mp1 = glm::translate(M_copy, glm::vec3(0.0f, 0.0f, 0.0f));
 	}
-	else 
+	else if (!destroyed)
 	{
 		collision = false;
 	}
+	else
+	{
+		collision = true;
+	}
 }
 
-bool Bullet::hasCollision(glm::vec3 object_position, glm::vec3 object_size)
+bool Bullet::hasCollision(glm::vec3 object_position, glm::vec3 object_size, bool destroyed)
 {
-	collision_detector(object_position, object_size);
+	collision_detector(object_position, object_size, destroyed);
 	return collision;
 }

@@ -56,7 +56,94 @@ glm::vec4 tank_position = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
 glm::vec3 speed_vector = glm::vec3(0.0f, 0.0f, 0.0f);
 glm::vec3 camera_transform = glm::vec3(0.0f, 2.0f, 7.0f);
 
+std::vector< glm::vec4 > vertices;
+std::vector< glm::vec2 > uvs;
+std::vector< glm::vec4 > normals; // Won't be used at the moment.
+std::vector< glm::vec4 > colors;
+
 ShaderProgram* sp;
+
+bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors) 
+{
+	std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
+	std::vector< glm::vec4 > temp_vertices;
+	std::vector< glm::vec2 > temp_uvs;
+	std::vector< glm::vec4 > temp_normals;
+#pragma warning(suppress : 4996)
+	FILE* file = fopen(path, "r");
+	if (file == NULL) {
+		printf("Impossible to open the file !\n");
+		return false;
+	}
+	while (1) {
+		char lineHeader[128];
+		// read the first word of the line
+#pragma warning(suppress : 4996)
+		int res = fscanf(file, "%s", lineHeader);
+		if (res == EOF)
+			break; // EOF = End Of File. Quit the loop.
+
+		if (strcmp(lineHeader, "v") == 0) {
+			glm::vec4 vertex;
+#pragma warning(suppress : 4996)
+			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
+			vertex.a = 1.0f;
+			temp_vertices.push_back(vertex);
+		}
+		else if (strcmp(lineHeader, "vt") == 0) {
+			glm::vec2 uv;
+#pragma warning(suppress : 4996)
+			fscanf(file, "%f %f\n", &uv.x, &uv.y);
+			temp_uvs.push_back(uv);
+		}
+		else if (strcmp(lineHeader, "vn") == 0) {
+			glm::vec4 normal;
+#pragma warning(suppress : 4996)
+			fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
+			normal.a = 0.0f;
+			temp_normals.push_back(normal);
+		}
+		else if (strcmp(lineHeader, "f") == 0) {
+			std::string vertex1, vertex2, vertex3;
+			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+#pragma warning(suppress : 4996)
+			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
+			if (matches != 9) {
+				printf("File can't be read by our simple parser : ( Try exporting with other options\n");
+				return false;
+			}
+			vertexIndices.push_back(vertexIndex[0]);
+			vertexIndices.push_back(vertexIndex[1]);
+			vertexIndices.push_back(vertexIndex[2]);
+			uvIndices.push_back(uvIndex[0]);
+			uvIndices.push_back(uvIndex[1]);
+			uvIndices.push_back(uvIndex[2]);
+			normalIndices.push_back(normalIndex[0]);
+			normalIndices.push_back(normalIndex[1]);
+			normalIndices.push_back(normalIndex[2]);
+		}
+	}
+
+	for (unsigned int i = 0; i < vertexIndices.size(); i++) {
+		unsigned int vertexIndex = vertexIndices[i];
+		glm::vec4 vertex = temp_vertices[vertexIndex - 1];
+		out_vertices.push_back(vertex);
+
+		unsigned int uvsIndex = uvIndices[i];
+		glm::vec2 uvs = temp_uvs[uvsIndex - 1];
+		out_uvs.push_back(uvs);
+
+		unsigned int normalIndex = normalIndices[i];
+		glm::vec4 normal = temp_normals[normalIndex - 1];
+		out_normals.push_back(normal);
+
+		// to jest tutaj tylko po to, ¿eby jebn¹æ kolor bo nie umiem w tesktury :/
+		glm::vec4 color;
+		color.x = 0.8; color.y = 0.3; color.z = 0.5; color.w = 1;
+		out_colors.push_back(color);
+	}
+	return true;
+}
 
 void freeOpenGLProgram(GLFWwindow* window);
 
@@ -140,6 +227,13 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetCursorPosCallback(window, mouse_callback); //Zarejestruj procedurę obsługi myszki
 
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
+
+	bool res = loadOBJ("redkin_shell.obj", vertices, uvs, normals, colors);
+
+	//printf("%d", res);
+
+	bullet.setObject(vertices, uvs, normals, colors);
+
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	floor_texture.readTexture((char*)"ground.png");
 }
@@ -171,37 +265,41 @@ void drawScene(GLFWwindow* window) {
 		angle -= rotateSpeed;
 	}
 	tank_position = tank.getPosition();
+
 	printf("%f, %f, %f, %f, %f, %f\n", cameraFront.x, cameraFront.y, cameraFront.z, cameraPos.x, cameraPos.y, cameraPos.z);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
-	
-	tank.move(speed_vector, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp,sp);
-
-	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
-	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
-
-	ground.draw_floor(P, V,floor_texture.tex,sp);
 
 	sp->use(); //Aktywuj program cieniujący
 
-	shoot_ball = bullet.shooting(shoot_ball);
-
-	if (!bullet.hasCollision(box.getPosition(), box.getSize()) && box.is_destroyed() == false)
-	{
-		box.draw(sp);
-	}
-	else
-	{
-		box.destroy();
-
-	}
-
-	glUniform4f(sp->u("color"), 0, 1, 0, 1);
+	tank.move(speed_vector, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp,sp);
 
 
 	if (shoot_ball == true)
 	{
-		bullet.generate(tank.getM_wieza(), tank.getLufa_cords(),sp);
+		bullet.generate(tank.getM_wieza(), tank.getLufa_cords(), sp);
 	}
+
+	shoot_ball = bullet.shooting(shoot_ball);
+
+
+	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
+	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
+
+
+	ground.draw_floor(P, V, floor_texture.tex, sp);
+
+	if (!bullet.hasCollision(box.getPosition(), box.getSize(), box.is_destroyed()))
+	{
+		box.draw(sp);
+	}
+	else if (box.is_destroyed() == false)
+	{
+		box.destroy();
+	}
+
+	glUniform4f(sp->u("color"), 0, 1, 0, 1);
+
 
 	glfwSwapBuffers(window); //Skopiuj bufor tylny do bufora przedniego
 }
