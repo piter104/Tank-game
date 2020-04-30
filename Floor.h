@@ -26,6 +26,25 @@ public:
 	 -1.0f, 1.0f,0.0f,1.0f, //B
 	};
 
+	float colors[24] = {
+ 0.73f,0.5f,0.3f,1.0f, //A
+ 0.73f,0.5f,0.3f,1.0f, //A
+ 0.73f,0.5f,0.3f,1.0f, //A
+  0.73f,0.5f,0.3f,1.0f, //A
+   0.73f,0.5f,0.3f,1.0f, //A
+	0.73f,0.5f,0.3f,1.0f, //A
+	};
+
+	float normals[24] = {
+				0.0f, 0.0f,-1.0f,0.0f,
+				0.0f, 0.0f,-1.0f,0.0f,
+				0.0f, 0.0f,-1.0f,0.0f,
+
+				0.0f, 0.0f,-1.0f,0.0f,
+				0.0f, 0.0f,-1.0f,0.0f,
+				0.0f, 0.0f,-1.0f,0.0f,
+	};
+
 	//Tablica wspó³rzêdnych teksturowania
 	float texCoords[12] = {
 	  100.0f, 0.0f,   //A

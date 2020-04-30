@@ -1,6 +1,6 @@
 #include "Bullet.h"
 
-void Bullet::setObject(std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors)
+void Bullet::setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors)
 {
 	vertices = out_vertices;
 	uvs = out_uvs;

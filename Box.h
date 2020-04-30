@@ -17,7 +17,7 @@
 class Box
 {
 private:
-	int verts = 1000;
+	int verts = 1600;
 	glm::vec3 coordinates = glm::vec3(4.0f, 0.0f, -4.0f);
 	glm::vec3 box_size = glm::vec3(1.0f, 2.0f, 1.0f);
 	glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
@@ -31,7 +31,7 @@ private:
 	std::vector< glm::vec4 > colors;
 
 public:
-	void setObject(std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors);
+	void setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
 	void destroy();
 	bool is_destroyed();
 	glm::vec3 getPosition();

@@ -22,7 +22,7 @@ private:
 	bool collision;
 
 	int shoot_length = 100;
-	int verts = 8700;
+	int verts = 8000;
 
 	glm::vec3 bullet_size = glm::vec3(0.8f, 0.5f, 0.7f);
 	glm::vec3 shoot = glm::vec3(1.0f, 0.5f, 0.0f); //spawn kuli
@@ -39,7 +39,7 @@ private:
 	void collision_detector(glm::vec3 object_position, glm::vec3 object_size, bool destroyed);
 
 public:
-	void setObject(std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors);
+	void setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
 	void generate(glm::mat4 M_wieza, glm::vec3 lufa_cords, ShaderProgram *sp);
 	bool shooting(bool shoot_ball);
 	bool hasCollision(glm::vec3 object_position, glm::vec3 object_size, bool destroyed);

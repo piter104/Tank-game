@@ -1,6 +1,6 @@
 #include "Box.h"
 
-void Box::setObject(std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors)
+void Box::setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors)
 {
 	vertices = out_vertices;
 	uvs = out_uvs;
@@ -34,7 +34,7 @@ void Box::draw(ShaderProgram *sp)
 		float color[] = { 1,1,0,1 };
 		glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, color);
 		M_skrzynia = glm::translate(M_skrzynia, coordinates);
-		M_skrzynia = glm::scale(M_skrzynia, glm::vec3(0.5f, 1.0f, 0.5f));
+		M_skrzynia = glm::scale(M_skrzynia, glm::vec3(0.5f, 0.5f, 0.5f));
 
 		sp->use();//Aktywacja programu cieniuj¹cego
 

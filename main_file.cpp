@@ -61,6 +61,11 @@ std::vector< glm::vec2 > uvs;
 std::vector< glm::vec4 > normals; // Won't be used at the moment.
 std::vector< glm::vec4 > colors;
 
+std::vector< glm::vec4 > vertices2;
+std::vector< glm::vec2 > uvs2;
+std::vector< glm::vec4 > normals2; // Won't be used at the moment.
+std::vector< glm::vec4 > colors2;
+
 ShaderProgram* sp;
 
 bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors) 
@@ -230,13 +235,13 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	bool res = loadOBJ("redkin_shell.obj", vertices, uvs, normals, colors);
 
-	//printf("%d", res);
+	printf("%d", res);
 
 	bullet.setObject(vertices, uvs, normals, colors);
 
-	res = loadOBJ("Crate_LP.obj", vertices, uvs, normals, colors);
-
-	box.setObject(vertices, uvs, normals, colors);
+	res = loadOBJ("box.obj", vertices2, uvs2, normals2, colors2);
+	printf("%d", res);
+	box.setObject(vertices2, uvs2, normals2, colors2);
 
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	floor_texture.readTexture((char*)"ground.png");
