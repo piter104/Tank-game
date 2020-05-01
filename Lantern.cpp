@@ -34,7 +34,7 @@ void Lantern::draw(ShaderProgram* sp)
 	float color[] = { 1,1,0,1 };
 	glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, color);
 	M_lantern = glm::translate(M_lantern, coordinates);
-	M_lantern = glm::scale(M_lantern, glm::vec3(0.5f, 0.5f, 0.5f));
+	M_lantern = glm::scale(M_lantern, glm::vec3(0.3f, 0.3f, 0.3f));
 
 	sp->use();//Aktywacja programu cieniuj¹cego
 
@@ -46,9 +46,13 @@ void Lantern::draw(ShaderProgram* sp)
 	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices[0]); //Wska¿ tablicê z danymi dla atrybutu vertex
 	glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors[0]);
 	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
+	printf("%u\n", vertices.size());
+	printf("%u\n", colors.size());
+	printf("%u\n", normals.size());
 
 
-	glDrawArrays(GL_TRIANGLES, 0, verts); //Narysuj obiekt
+	glDrawArrays(GL_TRIANGLES, 0, 1476); //Narysuj obiekt
+	//glDrawElements(GL_TRIANGLES, 705, GL_UNSIGNED_INT, indexes);
 
 	glDisableVertexAttribArray(sp->a("vertex"));  //Wy³¹cz przesy³anie danych do atrybutu vertex
 	glDisableVertexAttribArray(sp->a("color"));

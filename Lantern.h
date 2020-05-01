@@ -17,7 +17,7 @@
 class Lantern
 {
 private:
-	int verts = 1580;
+	int verts = 965;
 
 	glm::vec3 coordinates = glm::vec3(-4.0f, 0.0f, -4.0f);
 	glm::vec3 lantern_size = glm::vec3(1.0f, 1.0f, 1.0f);

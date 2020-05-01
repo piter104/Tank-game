@@ -18,12 +18,20 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #define GLM_FORCE_RADIANS
 
 
+
+#include <algorithm>
+#include <fstream>
+#include <istream>
+#include <string>
+#include<iostream>
+
 #include "Bullet.h"
 #include "Tank.h"
 #include "Box.h"
 #include "Floor.h"
 #include "Texture.h"
 #include "Lantern.h"
+
 
 Bullet bullet = Bullet();
 Tank tank = Tank();
@@ -81,6 +89,7 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 	std::vector< glm::vec4 > temp_vertices;
 	std::vector< glm::vec2 > temp_uvs;
 	std::vector< glm::vec4 > temp_normals;
+
 #pragma warning(suppress : 4996)
 	FILE* file = fopen(path, "r");
 	if (file == NULL) {
@@ -92,6 +101,7 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 		// read the first word of the line
 #pragma warning(suppress : 4996)
 		int res = fscanf(file, "%s", lineHeader);
+		//printf("%s", lineHeader);
 		if (res == EOF)
 			break; // EOF = End Of File. Quit the loop.
 
@@ -118,6 +128,7 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 		else if (strcmp(lineHeader, "f") == 0) {
 			std::string vertex1, vertex2, vertex3;
 			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+			
 #pragma warning(suppress : 4996)
 			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
 			if (matches != 9) {
@@ -127,6 +138,7 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 			vertexIndices.push_back(vertexIndex[0]);
 			vertexIndices.push_back(vertexIndex[1]);
 			vertexIndices.push_back(vertexIndex[2]);
+
 			uvIndices.push_back(uvIndex[0]);
 			uvIndices.push_back(uvIndex[1]);
 			uvIndices.push_back(uvIndex[2]);
@@ -244,11 +256,11 @@ void initOpenGLProgram(GLFWwindow* window) {
 	printf("%d", res);
 	bullet.setObject(vertices, uvs, normals, colors);
 
-	res = loadOBJ("box.obj", vertices2, uvs2, normals2, colors2);
+	res = loadOBJ("bottom.obj", vertices2, uvs2, normals2, colors2);
 	printf("%d", res);
 	box.setObject(vertices2, uvs2, normals2, colors2);
 
-	res = loadOBJ("Lantern.obj", vertices3, uvs3, normals3, colors3);
+	res = loadOBJ("lantern2.obj", vertices3, uvs3, normals3, colors3);
 	printf("%d", res);
 	lantern.setObject(vertices3, uvs3, normals3, colors3);
 
@@ -290,6 +302,7 @@ void drawScene(GLFWwindow* window) {
 
 	sp->use(); //Aktywuj program cieniujący
 
+	glUniform4f(sp->u("lp"), 0, 10, 0, 1);
 	tank.move(speed_vector, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp,sp);
 
 

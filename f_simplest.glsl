@@ -12,7 +12,7 @@ void main(void) {
     vec4 mv = normalize(v);
     vec4 ml = normalize(l);
 
-    vec4 r = reflect(-ml, mn);
+    vec4 r = reflect(-ml, mn)*0;
 
     float nl = clamp(dot(mn, ml), 0, 1);
     float rv = pow(clamp(dot(r, mv), 0, 1),32);
