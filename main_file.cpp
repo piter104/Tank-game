@@ -23,10 +23,12 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "Box.h"
 #include "Floor.h"
 #include "Texture.h"
+#include "Lantern.h"
 
 Bullet bullet = Bullet();
 Tank tank = Tank();
 Box box = Box();
+Lantern lantern = Lantern();
 Texture floor_texture = Texture();
 Floor ground = Floor();
 
@@ -65,6 +67,11 @@ std::vector< glm::vec4 > vertices2;
 std::vector< glm::vec2 > uvs2;
 std::vector< glm::vec4 > normals2; // Won't be used at the moment.
 std::vector< glm::vec4 > colors2;
+
+std::vector< glm::vec4 > vertices3;
+std::vector< glm::vec2 > uvs3;
+std::vector< glm::vec4 > normals3; // Won't be used at the moment.
+std::vector< glm::vec4 > colors3;
 
 ShaderProgram* sp;
 
@@ -234,14 +241,16 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
 
 	bool res = loadOBJ("redkin_shell.obj", vertices, uvs, normals, colors);
-
 	printf("%d", res);
-
 	bullet.setObject(vertices, uvs, normals, colors);
 
 	res = loadOBJ("box.obj", vertices2, uvs2, normals2, colors2);
 	printf("%d", res);
 	box.setObject(vertices2, uvs2, normals2, colors2);
+
+	res = loadOBJ("Lantern.obj", vertices3, uvs3, normals3, colors3);
+	printf("%d", res);
+	lantern.setObject(vertices3, uvs3, normals3, colors3);
 
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	floor_texture.readTexture((char*)"ground.png");
@@ -291,6 +300,7 @@ void drawScene(GLFWwindow* window) {
 
 	shoot_ball = bullet.shooting(shoot_ball);
 
+	lantern.draw(sp);
 
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania

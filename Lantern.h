@@ -1,5 +1,5 @@
-#ifndef BULLET_H
-#define BULLET_H
+#ifndef LANTERN_H
+#define LANTERN_H
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -13,36 +13,31 @@
 #include "lodepng.h"
 #include "shaderprogram.h"
 
-class Bullet
+
+class Lantern
 {
 private:
-	float radius = 0.1f;
-	int counter = 0;
-	bool first_frame_shot = true;
-	bool collision;
+	int verts = 1580;
 
-	int shoot_length = 100;
-	int verts = 7500;
-
-	glm::vec3 bullet_size = glm::vec3(0.8f, 0.5f, 0.7f);
-	glm::vec3 shoot = glm::vec3(1.0f, 0.5f, 0.0f); //spawn kuli
-	glm::vec3  bullet_vector = glm::vec3(0.3f, -0.01, 0.0f);
+	glm::vec3 coordinates = glm::vec3(-4.0f, 0.0f, -4.0f);
+	glm::vec3 lantern_size = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
-	glm::mat4 Mp1;
-	glm::mat4 M_copy;
+	glm::mat4 M_lantern = glm::mat4(1.0f); //Zainicjuj macierz modelu macierz¹ jednostkow¹
+
+	bool destroyed = false;
 
 	std::vector< glm::vec4 > vertices;
 	std::vector< glm::vec2 > uvs;
 	std::vector< glm::vec4 > normals; // Won't be used at the moment.
 	std::vector< glm::vec4 > colors;
 
-	void collision_detector(glm::vec3 object_position, glm::vec3 object_size, bool destroyed);
-
 public:
 	void setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
-	void generate(glm::mat4 M_wieza, glm::vec3 lufa_cords, ShaderProgram *sp);
-	bool shooting(bool shoot_ball);
-	bool hasCollision(glm::vec3 object_position, glm::vec3 object_size, bool destroyed);
+	void destroy();
+	bool is_destroyed();
+	glm::vec3 getPosition();
+	glm::vec3 getSize();
+	void draw(ShaderProgram* sp);
 };
 
 #endif
