@@ -1,9 +1,15 @@
 #include "Floor.h"
 
+Floor::Floor()
+{
+	//mSP = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
+}
+
 void Floor::draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram *sp)
 {
 	//Kod rysuj¹cy
 	//spTextured->use();
+	sp->use();
 	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
 
@@ -16,6 +22,8 @@ void Floor::draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram *sp)
 
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_floor));
 
+	glUniform4f(sp->u("lp"), 0, 10, 0, 1);
+
 	glEnableVertexAttribArray(sp->a("vertex"));
 	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, verts);
 	glEnableVertexAttribArray(sp->a("color"));
@@ -23,21 +31,22 @@ void Floor::draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram *sp)
 	glEnableVertexAttribArray(sp->a("normal"));
 	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, normals);
 
-	//glEnableVertexAttribArray(spTextured->a("texCoord"));
-	//glVertexAttribPointer(spTextured->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords);
+	glEnableVertexAttribArray(sp->a("aTexCoord"));
+	glVertexAttribPointer(sp->a("aTexCoord"), 2, GL_FLOAT, false, 0, texCoords);
 
-	//glActiveTexture(GL_TEXTURE0);
-	//glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	//glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	//glGenerateMipmap(GL_TEXTURE_2D);
-	//glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	//glBindTexture(GL_TEXTURE_2D, tex);
-	//glUniform1i(spLambertTextured->u("tex"), 0);
+	glActiveTexture(GL_TEXTURE0);
+	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glUniform1i(sp->u("ourTexture1"), 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
 	glDisableVertexAttribArray(sp->a("vertex"));
 	glDisableVertexAttribArray(sp->a("color"));
 	glDisableVertexAttribArray(sp->a("normal"));
+	glDisableVertexAttribArray(sp->a("aTexCoord"));
 	//glDisableVertexAttribArray(spTextured->a("texCoord"));
 }

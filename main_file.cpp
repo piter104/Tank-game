@@ -31,6 +31,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "Floor.h"
 #include "Texture.h"
 #include "Lantern.h"
+#include "shaderprogram.h"
 
 
 Bullet bullet = Bullet();
@@ -82,6 +83,7 @@ std::vector< glm::vec4 > normals3; // Won't be used at the moment.
 std::vector< glm::vec4 > colors3;
 
 ShaderProgram* sp;
+ShaderProgram* spf;
 
 bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors) 
 {
@@ -265,6 +267,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	lantern.setObject(vertices3, uvs3, normals3, colors3);
 
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
+	spf = new ShaderProgram("v_floor.glsl", NULL, "f_floor.glsl");
 	floor_texture.readTexture((char*)"ground.png");
 }
 
@@ -319,7 +322,7 @@ void drawScene(GLFWwindow* window) {
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 
 
-	ground.draw_floor(P, V, floor_texture.tex, sp);
+	ground.draw_floor(P, V, floor_texture.tex, spf);
 
 	if (!bullet.hasCollision(box.getPosition(), box.getSize(), box.is_destroyed()))
 	{
@@ -348,7 +351,7 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	window = glfwCreateWindow(500, 500, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
+	window = glfwCreateWindow(1000, 800, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
 
 	if (!window) //Jeżeli okna nie udało się utworzyć, to zamknij program
 	{

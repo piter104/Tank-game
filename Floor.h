@@ -16,6 +16,8 @@ class Floor
 {
 
 public:
+
+	ShaderProgram *mSP;
 	float verts[24] = {
 	  1.0f,-1.0f,0.0f,1.0f, //A
 	 -1.0f, 1.0f,0.0f,1.0f, //B
@@ -58,6 +60,8 @@ public:
 
 	//Liczba wierzcho³ków w tablicy
 	int vertexCount = 6;
+
+	Floor();
 
 	void draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram *sp);
 	
