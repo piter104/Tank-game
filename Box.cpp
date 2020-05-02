@@ -40,7 +40,7 @@ void Box::draw(ShaderProgram *sp)
 		//M_skrzynia = glm::rotate(M_skrzynia, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnó¿ macierz modelu razy macierz obrotu o k¹t angle wokó³ osi Y
 		
 		sp->use();//Aktywacja programu cieniuj¹cego
-		glUniform4f(sp->u("lp"), 1,0, 0, 1);
+		glUniform4f(sp->u("lp"), -4,3, -4, 1);
 		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_skrzynia));
 
 		glEnableVertexAttribArray(sp->a("vertex"));  //W³¹cz przesy³anie danych do atrybutu vertex

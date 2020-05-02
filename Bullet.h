@@ -23,7 +23,7 @@ private:
 	int shoot_length = 100;
 	int verts = 7500;
 
-	glm::vec3 bullet_size = glm::vec3(0.8f, 0.5f, 0.7f);
+	glm::vec3 bullet_size = glm::vec3(0.3f, 0.3f, 0.3f);
 	glm::vec3 shoot = glm::vec3(0.0f, 0.0f, -1.0f); //spawn kuli
 	glm::vec3  bullet_vector = glm::vec3(-0.03f, 0.0F, 0.5f);
 	glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);

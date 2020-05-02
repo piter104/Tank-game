@@ -12,10 +12,11 @@ void main(void) {
     vec4 mv = normalize(v);
     vec4 ml = normalize(l);
 
-    vec4 r = reflect(-ml, mn)*0;
+    vec4 r = reflect(-ml, mn);
 
-    float nl = clamp(dot(mn, ml), 0, 1);
-    float rv = pow(clamp(dot(r, mv), 0, 1),32);
+    float nl = clamp(pow(dot(mn, ml), 0.8f), 0, 1);
+    float rv = pow(clamp(dot(r, mv), 0, 1),64);
+
     //d = distance(V * M * vertex, vec4(0, 0, 0, 1));
    // d = 1-((d - 3.3) / 1.7);
 

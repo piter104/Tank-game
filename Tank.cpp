@@ -82,6 +82,7 @@ void Tank::move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm
 	glm::mat4 M = glm::mat4(1.0f);
 
 	M = glm::translate(M, speed_vector);
+	M = glm::translate(M, glm::vec3(0.0f,0.4f,0.0f));
 	M = glm::rotate(M, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnó¿ macierz modelu razy macierz obrotu o k¹t angle wokó³ osi Y
 	tank_position = M * Position;
 	cameraFront = glm::vec3(tank_position[0], tank_position[1], tank_position[2]);
@@ -139,19 +140,18 @@ void Tank::move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm
 
 
 	glDrawArrays(GL_TRIANGLES, 0, vertices3.size()); //Narysuj obiekt
-
 	// petla do rysowania kó³ wzd³u¿ boku czo³gu
 	for (float i = -2; i < 3; i++)
 	{
 		//pêtla do rysowania przeciwleg³ych kó³
 		for (float j = 0; j < 2; j++)
 		{
-			M_wheel = glm::translate(M, glm::vec3(10 * i / 10, 0.35f, -1.5f + 3.0f*j)); //...i macierz przesuniêcia
+			M_wheel = glm::translate(M, glm::vec3(10.5 * i / 10, 0.05f, -1.5f + 3.0f*j)); //...i macierz przesuniêcia
 
-			M_wheel = glm::rotate(M_wheel, glm::radians(20 * (speed_vector[0] + speed_vector[2])), glm::vec3(0.0f, 0.0f, 1.0f - 2.0f*j));
+			M_wheel = glm::rotate(M_wheel, glm::radians(40 * (speed_vector[0] + speed_vector[2])), glm::vec3(0.0f, 0.0f, 1.0f));
 
 
-			M_wheel = glm::scale(M_wheel, glm::vec3(0.7f, 0.7f, 0.7f));
+			M_wheel = glm::scale(M_wheel, glm::vec3(0.9f, 0.9f, 0.9f));
 
 			glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_wheel)); //Za³aduj do programu cieniuj¹cego macierz modelu
 			

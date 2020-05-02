@@ -50,12 +50,9 @@ void Lantern::draw(ShaderProgram* sp, glm::vec3 cameraPos, glm::vec3 cameraFront
 	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices[0]); //Wska¿ tablicê z danymi dla atrybutu vertex
 	glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors[0]);
 	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
-	printf("%u\n", vertices.size());
-	printf("%u\n", colors.size());
-	printf("%u\n", normals.size());
 
 
-	glDrawArrays(GL_TRIANGLES, 0, 1476); //Narysuj obiekt
+	glDrawArrays(GL_TRIANGLES, 0, vertices.size()); //Narysuj obiekt
 	//glDrawElements(GL_TRIANGLES, 705, GL_UNSIGNED_INT, indexes);
 
 	glDisableVertexAttribArray(sp->a("vertex"));  //Wy³¹cz przesy³anie danych do atrybutu vertex

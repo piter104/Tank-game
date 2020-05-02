@@ -37,7 +37,7 @@ public:
 	bool is_destroyed();
 	glm::vec3 getPosition();
 	glm::vec3 getSize();
-	void draw(ShaderProgram* sp);
+	void draw(ShaderProgram* sp, glm::vec3 cameraPos, glm::vec3 cameraFront, glm::vec3 cameraUp);
 };
 
 #endif

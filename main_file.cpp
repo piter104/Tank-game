@@ -187,7 +187,7 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 
 		// to jest tutaj tylko po to, ¿eby jebn¹æ kolor bo nie umiem w tesktury :/
 		glm::vec4 color;
-		color.x = 0.8; color.y = 0.3; color.z = 0.5; color.w = 1;
+		color.x = 0.08; color.y = 0.6; color.z = 0.25; color.w = 1;
 		out_colors.push_back(color);
 	}
 	return true;
@@ -339,7 +339,7 @@ void drawScene(GLFWwindow* window) {
 	}
 	tank_position = tank.getPosition();
 
-	printf("%f, %f, %f, %f, %f, %f\n", cameraFront.x, cameraFront.y, cameraFront.z, cameraPos.x, cameraPos.y, cameraPos.z);
+	//printf("%f, %f, %f, %f, %f, %f\n", cameraFront.x, cameraFront.y, cameraFront.z, cameraPos.x, cameraPos.y, cameraPos.z);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
 
