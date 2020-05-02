@@ -50,7 +50,7 @@ float lastY = 300;
 float yaw = 0.0f;
 float pitch = 0.0f;
 float yaw_limit_down = 0.0f;
-float yaw_limit_up = 15.0f;
+float yaw_limit_up = 10.0f;
 
 const float movingSpeed = 0.1f;
 const float rotateSpeed = PI / 2;
@@ -97,6 +97,11 @@ std::vector< glm::vec4 > vertices6;
 std::vector< glm::vec2 > uvs6;
 std::vector< glm::vec4 > normals6; // Won't be used at the moment.
 std::vector< glm::vec4 > colors6;
+
+std::vector< glm::vec4 > vertices7;
+std::vector< glm::vec2 > uvs7;
+std::vector< glm::vec4 > normals7; // Won't be used at the moment.
+std::vector< glm::vec4 > colors7;
 
 ShaderProgram* sp;
 ShaderProgram* spf;
@@ -295,9 +300,14 @@ void initOpenGLProgram(GLFWwindow* window) {
 	printf("%d", res);
 	tank.setObjectBarrel(vertices6, uvs6, normals6, colors6);
 
+	res = loadOBJ("wheel3.obj", vertices7, uvs7, normals7, colors7);
+	printf("%d", res);
+	tank.setObjectWheel(vertices7, uvs7, normals7, colors7);
+
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	spf = new ShaderProgram("v_floor.glsl", NULL, "f_floor.glsl");
 	spl = new ShaderProgram("v_lantern.glsl", NULL, "f_lantern.glsl");
+
 	floor_texture.readTexture((char*)"ground.png");
 }
 
@@ -342,7 +352,7 @@ void drawScene(GLFWwindow* window) {
 
 	if (shoot_ball == true)
 	{
-		bullet.generate(tank.getM_wieza(), tank.getLufa_cords(), sp);
+		bullet.generate(tank.getM_lufa(),  sp);
 	}
 
 	shoot_ball = bullet.shooting(shoot_ball);

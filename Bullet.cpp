@@ -27,17 +27,17 @@ bool Bullet::shooting(bool shoot_ball)
 	}
 }
 
-void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords,ShaderProgram *sp)
+void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp)
 {
 		if (first_frame_shot == true) {
-			M_copy = M_wieza;
+			M_copy = M_lufa;
 			first_frame_shot = false;
 		}
 		
-		Mp1 = glm::translate(M_copy, lufa_cords + glm::vec3(shoot[0] - 1.0f, shoot[1], shoot[2])); //...i macierz przesuniêcia
-		Mp1 = glm::rotate(Mp1, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		Mp1 = glm::translate(M_copy, glm::vec3(shoot[0] - 0.2f, shoot[1], shoot[2])); //...i macierz przesuniêcia
+		Mp1 = glm::rotate(Mp1, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		Mp1 = glm::scale(Mp1, glm::vec3(bullet_size));
-		//Mp1 = glm::scale(Mp1, glm::vec3(radius, radius, radius));
+
 		sp->use();//Aktywacja programu cieniuj¹cego
 
 		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(Mp1));
