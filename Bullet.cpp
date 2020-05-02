@@ -33,7 +33,7 @@ void Bullet::generate(glm::mat4 M_wieza, glm::vec3 lufa_cords,ShaderProgram *sp)
 			M_copy = M_wieza;
 			first_frame_shot = false;
 		}
-
+		
 		Mp1 = glm::translate(M_copy, lufa_cords + glm::vec3(shoot[0] - 1.0f, shoot[1], shoot[2])); //...i macierz przesuniêcia
 		Mp1 = glm::rotate(Mp1, glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		Mp1 = glm::scale(Mp1, glm::vec3(bullet_size));
@@ -76,6 +76,7 @@ void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size
 		counter = shoot_length;
 		collision = true;
 		Mp1 = glm::translate(M_copy, glm::vec3(0.0f, 0.0f, 0.0f));
+
 	}
 	else if (!destroyed)
 	{

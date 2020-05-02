@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -17,7 +17,7 @@ class Floor
 
 public:
 
-	ShaderProgram *mSP;
+	ShaderProgram* mSP;
 	float verts[24] = {
 	  1.0f,-1.0f,0.0f,1.0f, //A
 	 -1.0f, 1.0f,0.0f,1.0f, //B
@@ -47,7 +47,7 @@ public:
 				0.0f, 0.0f,-1.0f,0.0f,
 	};
 
-	//Tablica wspó³rzêdnych teksturowania
+	//Tablica wspÃ³Â³rzÃªdnych teksturowania
 	float texCoords[12] = {
 	  100.0f, 0.0f,   //A
 	  0.0f, 100.0f,    //B
@@ -58,11 +58,11 @@ public:
 	  0.0f, 100.0f,    //B
 	};
 
-	//Liczba wierzcho³ków w tablicy
+	//Liczba wierzchoÂ³kÃ³w w tablicy
 	int vertexCount = 6;
 
 	Floor();
 
-	void draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram *sp);
-	
+	void draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram* sp);
+
 };

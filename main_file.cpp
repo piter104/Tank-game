@@ -60,12 +60,12 @@ bool s_press = false;
 bool a_press = false;
 bool d_press = false;
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, 7.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 4.0f, 12.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec4 tank_position = glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
 glm::vec3 speed_vector = glm::vec3(0.0f, 0.0f, 0.0f);
-glm::vec3 camera_transform = glm::vec3(0.0f, 2.0f, 7.0f);
+glm::vec3 camera_transform = glm::vec3(0.0f, 4.0f, 12.0f);
 
 std::vector< glm::vec4 > vertices;
 std::vector< glm::vec2 > uvs;
@@ -82,10 +82,27 @@ std::vector< glm::vec2 > uvs3;
 std::vector< glm::vec4 > normals3; // Won't be used at the moment.
 std::vector< glm::vec4 > colors3;
 
+std::vector< glm::vec4 > vertices4;
+std::vector< glm::vec2 > uvs4;
+std::vector< glm::vec4 > normals4; // Won't be used at the moment.
+std::vector< glm::vec4 > colors4;
+
+std::vector< glm::vec4 > vertices5;
+std::vector< glm::vec2 > uvs5;
+std::vector< glm::vec4 > normals5; // Won't be used at the moment.
+std::vector< glm::vec4 > colors5;
+
+
+std::vector< glm::vec4 > vertices6;
+std::vector< glm::vec2 > uvs6;
+std::vector< glm::vec4 > normals6; // Won't be used at the moment.
+std::vector< glm::vec4 > colors6;
+
 ShaderProgram* sp;
 ShaderProgram* spf;
+ShaderProgram* spl;
 
-bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors) 
+bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors)
 {
 	std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
 	std::vector< glm::vec4 > temp_vertices;
@@ -130,7 +147,7 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 		else if (strcmp(lineHeader, "f") == 0) {
 			std::string vertex1, vertex2, vertex3;
 			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
-			
+
 #pragma warning(suppress : 4996)
 			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
 			if (matches != 9) {
@@ -197,7 +214,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	glm::vec3 direction;
 	direction.x = camera_transform[0] * cos(glm::radians(xoffset)) + camera_transform[2] * sin(glm::radians(xoffset));
 	direction.z = -camera_transform[0] * sin(glm::radians(xoffset)) + camera_transform[2] * cos(glm::radians(xoffset));
-	direction.y = 2.0f;
+	direction.y = 4.0f;
 	camera_transform = direction;
 }
 
@@ -258,7 +275,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	printf("%d", res);
 	bullet.setObject(vertices, uvs, normals, colors);
 
-	res = loadOBJ("bottom.obj", vertices2, uvs2, normals2, colors2);
+	res = loadOBJ("box.obj", vertices2, uvs2, normals2, colors2);
 	printf("%d", res);
 	box.setObject(vertices2, uvs2, normals2, colors2);
 
@@ -266,8 +283,21 @@ void initOpenGLProgram(GLFWwindow* window) {
 	printf("%d", res);
 	lantern.setObject(vertices3, uvs3, normals3, colors3);
 
+	res = loadOBJ("bottom.obj", vertices4, uvs4, normals4, colors4);
+	printf("%d", res);
+	tank.setObjectBottom(vertices4, uvs4, normals4, colors4);
+
+	res = loadOBJ("turret.obj", vertices5, uvs5, normals5, colors5);
+	printf("%d", res);
+	tank.setObjectTurret(vertices5, uvs5, normals5, colors5);
+
+	res = loadOBJ("lufa.obj", vertices6, uvs6, normals6, colors6);
+	printf("%d", res);
+	tank.setObjectBarrel(vertices6, uvs6, normals6, colors6);
+
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	spf = new ShaderProgram("v_floor.glsl", NULL, "f_floor.glsl");
+	spl = new ShaderProgram("v_lantern.glsl", NULL, "f_lantern.glsl");
 	floor_texture.readTexture((char*)"ground.png");
 }
 
@@ -305,8 +335,9 @@ void drawScene(GLFWwindow* window) {
 
 	sp->use(); //Aktywuj program cieniujący
 
-	glUniform4f(sp->u("lp"), 0, 10, 0, 1);
-	tank.move(speed_vector, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp,sp);
+	glUniform4f(sp->u("lp"), -4, 3.5, -4, 1);
+
+	tank.move(speed_vector, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp, sp);
 
 
 	if (shoot_ball == true)
@@ -316,7 +347,7 @@ void drawScene(GLFWwindow* window) {
 
 	shoot_ball = bullet.shooting(shoot_ball);
 
-	lantern.draw(sp);
+	lantern.draw(spl, cameraPos, cameraFront, cameraUp);
 
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania

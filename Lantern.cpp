@@ -28,9 +28,11 @@ glm::vec3 Lantern::getSize()
 	return lantern_size;
 }
 
-void Lantern::draw(ShaderProgram* sp)
+void Lantern::draw(ShaderProgram* sp, glm::vec3 cameraPos, glm::vec3 cameraFront, glm::vec3 cameraUp)
 {
 	glm::mat4 M_lantern = glm::mat4(1.0f);
+	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
+	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 	float color[] = { 1,1,0,1 };
 	glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, color);
 	M_lantern = glm::translate(M_lantern, coordinates);
@@ -39,6 +41,8 @@ void Lantern::draw(ShaderProgram* sp)
 	sp->use();//Aktywacja programu cieniuj¹cego
 
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_lantern));
+	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
+	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
 
 	glEnableVertexAttribArray(sp->a("vertex"));  //W³¹cz przesy³anie danych do atrybutu vertex
 	glEnableVertexAttribArray(sp->a("color"));

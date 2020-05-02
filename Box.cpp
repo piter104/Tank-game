@@ -36,7 +36,7 @@ void Box::draw(ShaderProgram *sp)
 		
 
 		M_skrzynia = glm::translate(M_skrzynia, coordinates);
-		M_skrzynia = glm::scale(M_skrzynia, glm::vec3(0.05f, 0.05f, 0.05f));
+		M_skrzynia = glm::scale(M_skrzynia, glm::vec3(0.5f, 0.5f, 0.5f));
 		//M_skrzynia = glm::rotate(M_skrzynia, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnó¿ macierz modelu razy macierz obrotu o k¹t angle wokó³ osi Y
 		
 		sp->use();//Aktywacja programu cieniuj¹cego
