@@ -77,7 +77,7 @@ bool Tank::collision_detector(glm::vec3 object_position, glm::vec3 object_size)
 	return collisionX && collisionY;
 }
 
-void Tank::move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm::vec3 &camera_transform, glm::vec3 &cameraFront, glm::vec3 &cameraPos, glm::vec3 cameraUp, ShaderProgram *sp)
+void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_speed_right, float angle, float pitch, float yaw, glm::vec3 &camera_transform, glm::vec3 &cameraFront, glm::vec3 &cameraPos, glm::vec3 cameraUp, ShaderProgram *sp)
 {
 	glm::mat4 M = glm::mat4(1.0f);
 
@@ -147,8 +147,10 @@ void Tank::move(glm::vec3 speed_vector, float angle, float pitch, float yaw, glm
 		for (float j = 0; j < 2; j++)
 		{
 			M_wheel = glm::translate(M, glm::vec3(10.5 * i / 10, 0.05f, -1.5f + 3.0f*j)); //...i macierz przesuniêcia
-
-			M_wheel = glm::rotate(M_wheel, glm::radians(40 * (speed_vector[0] + speed_vector[2])), glm::vec3(0.0f, 0.0f, 1.0f));
+			if (j == 0)
+				M_wheel = glm::rotate(M_wheel, glm::radians(40 * -wheel_speed_left), glm::vec3(0.0f, 0.0f, 1.0f));
+			else
+				M_wheel = glm::rotate(M_wheel, glm::radians(40 * -wheel_speed_right), glm::vec3(0.0f, 0.0f, 1.0f));
 
 
 			M_wheel = glm::scale(M_wheel, glm::vec3(0.9f, 0.9f, 0.9f));

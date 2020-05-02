@@ -28,6 +28,12 @@ glm::vec3 Box::getSize()
 	return box_size;
 }
 
+void Box::setCords(glm::vec3 coords)
+{
+	coordinates = coords;
+}
+
+
 void Box::draw(ShaderProgram *sp)
 {
 		glm::mat4 M_skrzynia = glm::mat4(1.0f);

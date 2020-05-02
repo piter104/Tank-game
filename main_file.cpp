@@ -25,6 +25,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include <string>
 #include<iostream>
 
+#include "Tree.h"
 #include "Bullet.h"
 #include "Tank.h"
 #include "Box.h"
@@ -37,9 +38,12 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 Bullet bullet = Bullet();
 Tank tank = Tank();
 Box box = Box();
+Tree tree = Tree();
+Tree tree2 = Tree();
 Lantern lantern = Lantern();
 Texture floor_texture = Texture();
 Floor ground = Floor();
+
 
 
 float angle = 90.0f;
@@ -51,6 +55,8 @@ float yaw = 0.0f;
 float pitch = 0.0f;
 float yaw_limit_down = 0.0f;
 float yaw_limit_up = 10.0f;
+float wheel_speed_right = 0.0f;
+float wheel_speed_left = 0.0f;
 
 const float movingSpeed = 0.1f;
 const float rotateSpeed = PI / 2;
@@ -102,6 +108,11 @@ std::vector< glm::vec4 > vertices7;
 std::vector< glm::vec2 > uvs7;
 std::vector< glm::vec4 > normals7; // Won't be used at the moment.
 std::vector< glm::vec4 > colors7;
+
+std::vector< glm::vec4 > vertices8;
+std::vector< glm::vec2 > uvs8;
+std::vector< glm::vec4 > normals8; // Won't be used at the moment.
+std::vector< glm::vec4 > colors8;
 
 ShaderProgram* sp;
 ShaderProgram* spf;
@@ -304,6 +315,13 @@ void initOpenGLProgram(GLFWwindow* window) {
 	printf("%d", res);
 	tank.setObjectWheel(vertices7, uvs7, normals7, colors7);
 
+	res = loadOBJ("tree2.obj", vertices8, uvs8, normals8, colors8);
+	printf("%d", res);
+	tree.setObject(vertices8, uvs8, normals8, colors8);
+	tree2.setObject(vertices8, uvs8, normals8, colors8);
+	tree.setCords(glm::vec3(2.0f, 0.0f, -20.0f));
+	tree2.setCords(glm::vec3(-17.0f, 0.0f, 10.0f));
+
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	spf = new ShaderProgram("v_floor.glsl", NULL, "f_floor.glsl");
 	spl = new ShaderProgram("v_lantern.glsl", NULL, "f_lantern.glsl");
@@ -322,20 +340,28 @@ void freeOpenGLProgram(GLFWwindow* window) {
 //Procedura rysująca zawartość sceny
 void drawScene(GLFWwindow* window) {
 	//************Tutaj umieszczaj kod rysujący obraz******************
-
 	if (w_press) {
 		speed_vector.z -= movingSpeed * sin(angle * PI / 180);
 		speed_vector.x += movingSpeed * cos(angle * PI / 180);
+		wheel_speed_left += movingSpeed;
+		wheel_speed_right += movingSpeed;
+
 	}
 	if (s_press) {
 		speed_vector.z += movingSpeed * sin(angle * PI / 180);
 		speed_vector.x -= movingSpeed * cos(angle * PI / 180);
+		wheel_speed_left -= movingSpeed;
+		wheel_speed_right -= movingSpeed;
 	}
 	if (a_press) {
 		angle += rotateSpeed;
+		wheel_speed_right += movingSpeed * 0.5f;
+		wheel_speed_left -= movingSpeed * 0.5f;
 	}
 	if (d_press) {
 		angle -= rotateSpeed;
+		wheel_speed_right -= movingSpeed * 0.5f;
+		wheel_speed_left += movingSpeed * 0.5f;
 	}
 	tank_position = tank.getPosition();
 
@@ -347,7 +373,10 @@ void drawScene(GLFWwindow* window) {
 
 	glUniform4f(sp->u("lp"), -4, 3.5, -4, 1);
 
-	tank.move(speed_vector, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp, sp);
+	tank.move(speed_vector, wheel_speed_left, wheel_speed_right, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp, sp);
+
+	tree.draw(sp);
+	tree2.draw(sp);
 
 
 	if (shoot_ball == true)
