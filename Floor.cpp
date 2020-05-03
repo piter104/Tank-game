@@ -14,14 +14,13 @@ void Floor::draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram* sp)
 	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
 
 	glm::mat4 M_floor = glm::mat4(1.0f);
-	M_floor = glm::translate(M_floor, glm::vec3(-4.0f, 0.0f, -4.0f));
-	M_floor = glm::rotate(M_floor, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Pomnó¿ macierz modelu razy macierz obrotu o k¹t angle wokó³ osi Y
 	M_floor = glm::rotate(M_floor, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)); //Pomnó¿ macierz modelu razy macierz obrotu o k¹t angle wokó³ osi X
 	M_floor = glm::scale(M_floor, glm::vec3(1000.0f, 1000.0f, 1000.0f));
 
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_floor));
 
 	glUniform4f(sp->u("lp"), -4, 3, -4, 1);
+	glUniform4f(sp->u("lp2"), -12, 3, -12, 1);
 
 	glEnableVertexAttribArray(sp->a("vertex"));
 	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, verts);

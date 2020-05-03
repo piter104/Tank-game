@@ -54,7 +54,7 @@ void Lantern::draw(ShaderProgram* sp, GLuint tex, GLuint tex2, glm::vec3 cameraP
 
 
 	sp->use();//Aktywacja programu cieniuj¹cego
-	glUniform4f(sp->u("lp"), -4, 3.5, -4, 1);
+	glUniform4f(sp->u("lp"), coordinates.x, 3.5, coordinates.z, 1);
 
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_lantern));
 	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));

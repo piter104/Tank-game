@@ -14,7 +14,12 @@ out vec4 l;
 out vec4 n;
 out vec4 v;
 
+//out vec4 l2;
+//out vec4 n2;
+//out vec4 v2;
+
 uniform vec4 lp;
+//uniform vec4 lp2;
 
 in vec2 aTexCoord;
 
@@ -28,6 +33,12 @@ void main(void) {
 
     //vec4 r = reflect(-l, n);
     v = normalize(vec4(0, 0, 0, 1) - V * M * vertex);
+
+    //l2 = normalize(V * lp2 - V * M * vertex);
+   // n2 = normalize(V * M * normal);
+
+    //vec4 r = reflect(-l, n);
+    //v2 = normalize(vec4(0, 0, 0, 1) - V * M * vertex);
 
     //float nl = clamp(dot(n, l), 0, 1);
     //float rv = pow(clamp(dot(r, v), 0, 1),25);

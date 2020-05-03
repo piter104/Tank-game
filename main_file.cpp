@@ -312,11 +312,13 @@ void initOpenGLProgram(GLFWwindow* window) {
 	res = loadOBJ("lamp_bottom.obj", vertices3, uvs3, normals3, colors3);
 	printf("%d", res);
 	lantern.setBottomObject(vertices3, uvs3, normals3, colors3);
+	lantern2.setBottomObject(vertices3, uvs3, normals3, colors3);
 
 	res = loadOBJ("lamp.obj", vertices9, uvs9, normals9, colors9);
 	printf("%d", res);
 
 	lantern.setLampObject(vertices9, uvs9, normals9, colors9);
+	lantern2.setLampObject(vertices9, uvs9, normals9, colors9);
 
 	res = loadOBJ("bottom.obj", vertices4, uvs4, normals4, colors4);
 	printf("%d", res);
@@ -348,7 +350,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	box.setCords(glm::vec3(4.0f, 0.0f, -4.0f));
 
 	lantern.setCords(glm::vec3(-4.0f, 0.0f, -4.0f));
-	lantern2.setCords(glm::vec3(2.0f, 0.0f, -12.0f));
+	lantern2.setCords(glm::vec3(-12.0f, 0.0f, -12.0f));
 
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	spf = new ShaderProgram("v_floor.glsl", NULL, "f_floor.glsl");
@@ -359,10 +361,10 @@ void initOpenGLProgram(GLFWwindow* window) {
 	lamp_bottom_texture.readTexture((char*)"lantern_botom_tex.png");
 	lamp_white_texture.readTexture((char*)"lamp_tex.png");
 	box_texture.readTexture((char*)"light_wood.png");
-	tree_texture.readTexture((char*)"tree.png");
+	tree_texture.readTexture((char*)"tree2.png");
 	bullet_texture.readTexture((char*)"redkin.png");
 	wheel_texture.readTexture((char*)"wheel.png");
-	tank_texture.readTexture((char*)"tank.png");
+	tank_texture.readTexture((char*)"tank3.png");
 }
 
 
@@ -405,9 +407,10 @@ void drawScene(GLFWwindow* window) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
 
-	sp->use(); //Aktywuj program cieniujący
+	spt->use(); //Aktywuj program cieniujący
 
-	glUniform4f(sp->u("lp"), -4, 3.5, -4, 1);
+	glUniform4f(spt->u("lp"), -4, 3.5, -4, 1);
+	glUniform4f(spt->u("lp2"), -12, 3, -12, 1);
 
 	tank.move(speed_vector, wheel_speed_left, wheel_speed_right, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp, spt, tank_texture.tex, wheel_texture.tex);
 

@@ -47,6 +47,7 @@ void Box::draw(ShaderProgram *sp, GLuint tex)
 		
 		sp->use();//Aktywacja programu cieniuj¹cego
 		glUniform4f(sp->u("lp"), -4,3, -4, 1);
+		glUniform4f(sp->u("lp2"), -12, 3, -12, 1);
 		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_skrzynia));
 
 		glEnableVertexAttribArray(sp->a("vertex"));  //W³¹cz przesy³anie danych do atrybutu vertex
