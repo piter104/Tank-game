@@ -17,7 +17,6 @@ class Floor
 
 public:
 
-	ShaderProgram* mSP;
 	float verts[24] = {
 	  1.0f,-1.0f,0.0f,1.0f, //A
 	 -1.0f, 1.0f,0.0f,1.0f, //B

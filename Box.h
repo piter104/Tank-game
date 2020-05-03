@@ -37,7 +37,7 @@ public:
 	glm::vec3 getPosition();
 	glm::vec3 getSize();
 	void setCords(glm::vec3 coords);
-	void draw(ShaderProgram *sp);
+	void draw(ShaderProgram *sp, GLuint tex);
 };
 
 #endif

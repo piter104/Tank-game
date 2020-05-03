@@ -26,7 +26,7 @@ private:
 public:
 	void setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
 	void setCords(glm::vec3 coords);
-	void draw(ShaderProgram* sp);
+	void draw(ShaderProgram* sp, GLuint tex);
 };
 
 #endif

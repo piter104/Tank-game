@@ -27,8 +27,8 @@ void main(void) {
 
     //float nl = clamp(dot(n, l), 0, 1);
     //float rv = pow(clamp(dot(r, v), 0, 1),25);
-    d = distance(M* vertex, vec4(-4, 3, -4, 1));
-    d = pow(1-((d - 1.3) / 3.7),3);
+    d = distance(M* vertex, vec4(-4, 3.8, -4, 1));
+    d = 1-((d - 1.3) / 3.7);
 
     iC = vec4(color.rgb*d, color.a);
     //iC = color;

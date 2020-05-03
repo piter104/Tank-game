@@ -34,7 +34,7 @@ void Box::setCords(glm::vec3 coords)
 }
 
 
-void Box::draw(ShaderProgram *sp)
+void Box::draw(ShaderProgram *sp, GLuint tex)
 {
 		glm::mat4 M_skrzynia = glm::mat4(1.0f);
 		float color[] = { 1,1,0,1 };
@@ -56,6 +56,11 @@ void Box::draw(ShaderProgram *sp)
 		glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors[0]);
 		glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
 
+		glEnableVertexAttribArray(sp->a("aTexCoord"));
+		glVertexAttribPointer(sp->a("aTexCoord"), 2, GL_FLOAT, false, 0, &uvs[0]);
+
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glUniform1i(sp->u("ourTexture1"), 0);
 
 		glDrawArrays(GL_TRIANGLES, 0, vertices.size()); //Narysuj obiekt
 

@@ -42,6 +42,10 @@ Tree tree = Tree();
 Tree tree2 = Tree();
 Lantern lantern = Lantern();
 Texture floor_texture = Texture();
+Texture lamp_bottom_texture = Texture();
+Texture lamp_white_texture = Texture();
+Texture box_texture = Texture();
+Texture tree_texture = Texture();
 Floor ground = Floor();
 
 
@@ -114,9 +118,15 @@ std::vector< glm::vec2 > uvs8;
 std::vector< glm::vec4 > normals8; // Won't be used at the moment.
 std::vector< glm::vec4 > colors8;
 
+std::vector< glm::vec4 > vertices9;
+std::vector< glm::vec2 > uvs9;
+std::vector< glm::vec4 > normals9; // Won't be used at the moment.
+std::vector< glm::vec4 > colors9;
+
 ShaderProgram* sp;
 ShaderProgram* spf;
 ShaderProgram* spl;
+ShaderProgram* spt;
 
 bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors)
 {
@@ -295,9 +305,14 @@ void initOpenGLProgram(GLFWwindow* window) {
 	printf("%d", res);
 	box.setObject(vertices2, uvs2, normals2, colors2);
 
-	res = loadOBJ("lantern2.obj", vertices3, uvs3, normals3, colors3);
+	res = loadOBJ("lamp_bottom.obj", vertices3, uvs3, normals3, colors3);
 	printf("%d", res);
-	lantern.setObject(vertices3, uvs3, normals3, colors3);
+	lantern.setBottomObject(vertices3, uvs3, normals3, colors3);
+
+	res = loadOBJ("lamp.obj", vertices9, uvs9, normals9, colors9);
+	printf("%d", res);
+
+	lantern.setLampObject(vertices9, uvs9, normals9, colors9);
 
 	res = loadOBJ("bottom.obj", vertices4, uvs4, normals4, colors4);
 	printf("%d", res);
@@ -317,6 +332,9 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	res = loadOBJ("tree2.obj", vertices8, uvs8, normals8, colors8);
 	printf("%d", res);
+
+
+
 	tree.setObject(vertices8, uvs8, normals8, colors8);
 	tree2.setObject(vertices8, uvs8, normals8, colors8);
 	tree.setCords(glm::vec3(2.0f, 0.0f, -20.0f));
@@ -325,8 +343,13 @@ void initOpenGLProgram(GLFWwindow* window) {
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	spf = new ShaderProgram("v_floor.glsl", NULL, "f_floor.glsl");
 	spl = new ShaderProgram("v_lantern.glsl", NULL, "f_lantern.glsl");
+	spt = new ShaderProgram("v_text.glsl", NULL, "f_text.glsl");
 
 	floor_texture.readTexture((char*)"ground.png");
+	lamp_bottom_texture.readTexture((char*)"lantern_botom_tex.png");
+	lamp_white_texture.readTexture((char*)"lamp_tex.png");
+	box_texture.readTexture((char*)"light_wood.png");
+	tree_texture.readTexture((char*)"tree.png");
 }
 
 
@@ -375,8 +398,8 @@ void drawScene(GLFWwindow* window) {
 
 	tank.move(speed_vector, wheel_speed_left, wheel_speed_right, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp, sp);
 
-	tree.draw(sp);
-	tree2.draw(sp);
+	tree.draw(spt, tree_texture.tex);
+	tree2.draw(spt,tree_texture.tex);
 
 
 	if (shoot_ball == true)
@@ -386,17 +409,17 @@ void drawScene(GLFWwindow* window) {
 
 	shoot_ball = bullet.shooting(shoot_ball);
 
-	lantern.draw(spl, cameraPos, cameraFront, cameraUp);
+	lantern.draw(spf, lamp_bottom_texture.tex,lamp_white_texture.tex, cameraPos, cameraFront, cameraUp);
 
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 
 
-	ground.draw_floor(P, V, floor_texture.tex, spf);
+	ground.draw_floor(P, V, floor_texture.tex, spt);
 
 	if (!bullet.hasCollision(box.getPosition(), box.getSize(), box.is_destroyed()))
 	{
-		box.draw(sp);
+		box.draw(spt,box_texture.tex);
 	}
 	else if (box.is_destroyed() == false)
 	{
