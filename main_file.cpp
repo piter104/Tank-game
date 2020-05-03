@@ -46,6 +46,9 @@ Texture lamp_bottom_texture = Texture();
 Texture lamp_white_texture = Texture();
 Texture box_texture = Texture();
 Texture tree_texture = Texture();
+Texture bullet_texture = Texture();
+Texture wheel_texture = Texture();
+Texture tank_texture = Texture();
 Floor ground = Floor();
 
 
@@ -350,6 +353,9 @@ void initOpenGLProgram(GLFWwindow* window) {
 	lamp_white_texture.readTexture((char*)"lamp_tex.png");
 	box_texture.readTexture((char*)"light_wood.png");
 	tree_texture.readTexture((char*)"tree.png");
+	bullet_texture.readTexture((char*)"redkin.png");
+	wheel_texture.readTexture((char*)"wheel.png");
+	tank_texture.readTexture((char*)"tank.png");
 }
 
 
@@ -396,15 +402,15 @@ void drawScene(GLFWwindow* window) {
 
 	glUniform4f(sp->u("lp"), -4, 3.5, -4, 1);
 
-	tank.move(speed_vector, wheel_speed_left, wheel_speed_right, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp, sp);
+	tank.move(speed_vector, wheel_speed_left, wheel_speed_right, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp, spt, tank_texture.tex, wheel_texture.tex);
 
 	tree.draw(spt, tree_texture.tex);
-	tree2.draw(spt,tree_texture.tex);
+	tree2.draw(spt, tree_texture.tex);
 
 
 	if (shoot_ball == true)
 	{
-		bullet.generate(tank.getM_lufa(),  sp);
+		bullet.generate(tank.getM_lufa(),  spt, bullet_texture.tex);
 	}
 
 	shoot_ball = bullet.shooting(shoot_ball);
@@ -419,7 +425,7 @@ void drawScene(GLFWwindow* window) {
 
 	if (!bullet.hasCollision(box.getPosition(), box.getSize(), box.is_destroyed()))
 	{
-		box.draw(spt,box_texture.tex);
+		box.draw(spt, box_texture.tex);
 	}
 	else if (box.is_destroyed() == false)
 	{

@@ -39,7 +39,7 @@ private:
 
 public:
 	void setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
-	void generate(glm::mat4 M_lufa, ShaderProgram *sp);
+	void generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex);
 	bool shooting(bool shoot_ball);
 	bool hasCollision(glm::vec3 object_position, glm::vec3 object_size, bool destroyed);
 };

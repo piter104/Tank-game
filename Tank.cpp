@@ -77,7 +77,7 @@ bool Tank::collision_detector(glm::vec3 object_position, glm::vec3 object_size)
 	return collisionX && collisionY;
 }
 
-void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_speed_right, float angle, float pitch, float yaw, glm::vec3 &camera_transform, glm::vec3 &cameraFront, glm::vec3 &cameraPos, glm::vec3 cameraUp, ShaderProgram *sp)
+void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_speed_right, float angle, float pitch, float yaw, glm::vec3 &camera_transform, glm::vec3 &cameraFront, glm::vec3 &cameraPos, glm::vec3 cameraUp, ShaderProgram *sp, GLuint tex, GLuint tex2)
 {
 	glm::mat4 M = glm::mat4(1.0f);
 
@@ -103,7 +103,13 @@ void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_spee
 	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices[0]); //Wska¿ tablicê z danymi dla atrybutu vertex
 	glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors[0]);
 	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
+	
+	glEnableVertexAttribArray(sp->a("aTexCoord"));
+	glVertexAttribPointer(sp->a("aTexCoord"), 2, GL_FLOAT, false, 0, &uvs[0]);
 
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glUniform1i(sp->u("ourTexture1"), 0);
+	
 
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size()); //Narysuj obiekt
 
@@ -161,6 +167,11 @@ void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_spee
 			glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors4[0]);
 			glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals4[0]);
 
+			glEnableVertexAttribArray(sp->a("aTexCoord"));
+			glVertexAttribPointer(sp->a("aTexCoord"), 2, GL_FLOAT, false, 0, &uvs4[0]);
+
+			glBindTexture(GL_TEXTURE_2D, tex2);
+			glUniform1i(sp->u("ourTexture1"), 0);
 
 			glDrawArrays(GL_TRIANGLES, 0, vertices4.size()); //Narysuj obiekt
 			

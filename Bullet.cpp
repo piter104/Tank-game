@@ -27,7 +27,7 @@ bool Bullet::shooting(bool shoot_ball)
 	}
 }
 
-void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp)
+void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex)
 {
 		if (first_frame_shot == true) {
 			M_copy = M_lufa;
@@ -49,6 +49,12 @@ void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp)
 		glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors[0]);
 		glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
 
+
+		glEnableVertexAttribArray(sp->a("aTexCoord"));
+		glVertexAttribPointer(sp->a("aTexCoord"), 2, GL_FLOAT, false, 0, &uvs[0]);
+
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glUniform1i(sp->u("ourTexture1"), 0);
 
 		glDrawArrays(GL_TRIANGLES, 0, verts); //Narysuj obiekt
 
