@@ -19,7 +19,7 @@ class Lantern
 private:
 	int verts = 965;
 
-	glm::vec3 coordinates = glm::vec3(-4.0f, 0.0f, -4.0f);
+	glm::vec3 coordinates;
 	glm::vec3 lantern_size = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
 	glm::mat4 M_lantern = glm::mat4(1.0f); //Zainicjuj macierz modelu macierz¹ jednostkow¹
@@ -43,6 +43,7 @@ public:
 	bool is_destroyed();
 	glm::vec3 getPosition();
 	glm::vec3 getSize();
+	void setCords(glm::vec3 coords);
 	void draw(ShaderProgram* sp, GLuint tex, GLuint tex2, glm::vec3 cameraPos, glm::vec3 cameraFront, glm::vec3 cameraUp);
 };
 

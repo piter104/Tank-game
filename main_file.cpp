@@ -41,6 +41,7 @@ Box box = Box();
 Tree tree = Tree();
 Tree tree2 = Tree();
 Lantern lantern = Lantern();
+Lantern lantern2 = Lantern();
 Texture floor_texture = Texture();
 Texture lamp_bottom_texture = Texture();
 Texture lamp_white_texture = Texture();
@@ -340,8 +341,14 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	tree.setObject(vertices8, uvs8, normals8, colors8);
 	tree2.setObject(vertices8, uvs8, normals8, colors8);
+
 	tree.setCords(glm::vec3(2.0f, 0.0f, -20.0f));
 	tree2.setCords(glm::vec3(-17.0f, 0.0f, 10.0f));
+
+	box.setCords(glm::vec3(4.0f, 0.0f, -4.0f));
+
+	lantern.setCords(glm::vec3(-4.0f, 0.0f, -4.0f));
+	lantern2.setCords(glm::vec3(2.0f, 0.0f, -12.0f));
 
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	spf = new ShaderProgram("v_floor.glsl", NULL, "f_floor.glsl");
@@ -416,6 +423,7 @@ void drawScene(GLFWwindow* window) {
 	shoot_ball = bullet.shooting(shoot_ball);
 
 	lantern.draw(spf, lamp_bottom_texture.tex,lamp_white_texture.tex, cameraPos, cameraFront, cameraUp);
+	lantern2.draw(spf, lamp_bottom_texture.tex, lamp_white_texture.tex, cameraPos, cameraFront, cameraUp);
 
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania

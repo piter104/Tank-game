@@ -36,6 +36,12 @@ glm::vec3 Lantern::getSize()
 	return lantern_size;
 }
 
+void Lantern::setCords(glm::vec3 coords)
+{
+	coordinates = coords;
+}
+
+
 void Lantern::draw(ShaderProgram* sp, GLuint tex, GLuint tex2, glm::vec3 cameraPos, glm::vec3 cameraFront, glm::vec3 cameraUp)
 {
 	glm::mat4 M_lantern = glm::mat4(1.0f);

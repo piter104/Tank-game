@@ -18,7 +18,7 @@ class Box
 {
 private:
 	int verts = 1600;
-	glm::vec3 coordinates = glm::vec3(4.0f, 0.0f, -4.0f);
+	glm::vec3 coordinates;
 	glm::vec3 box_size = glm::vec3(1.0f, 2.5f, 1.0f);
 	glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
 	glm::mat4 M_skrzynia = glm::mat4(1.0f); //Zainicjuj macierz modelu macierz¹ jednostkow¹
