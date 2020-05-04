@@ -74,7 +74,6 @@ void Lantern::draw(ShaderProgram* sp, GLuint tex, GLuint tex2, glm::vec3 cameraP
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(sp->u("ourTexture1"), 0);
 
-
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size()); //Narysuj obiekt
 
 	glm::mat4 M_lamp = M_lantern;

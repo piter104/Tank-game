@@ -33,7 +33,6 @@ void Box::setCords(glm::vec3 coords)
 	coordinates = coords;
 }
 
-
 void Box::draw(ShaderProgram *sp, GLuint tex)
 {
 		glm::mat4 M_skrzynia = glm::mat4(1.0f);

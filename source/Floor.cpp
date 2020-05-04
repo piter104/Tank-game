@@ -2,13 +2,10 @@
 
 Floor::Floor()
 {
-	//mSP = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 }
 
 void Floor::draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram* sp)
 {
-	//Kod rysuj¹cy
-	//spTextured->use();
 	sp->use();
 	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
@@ -46,5 +43,5 @@ void Floor::draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram* sp)
 	glDisableVertexAttribArray(sp->a("color"));
 	glDisableVertexAttribArray(sp->a("normal"));
 	glDisableVertexAttribArray(sp->a("aTexCoord"));
-	//glDisableVertexAttribArray(spTextured->a("texCoord"));
+
 }

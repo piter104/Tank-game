@@ -212,6 +212,7 @@ namespace Models {
 				0.0f, 1.0f, 0.0f,0.0f,
 			};
 
+
 			float vertexNormals[]={
 				1.0f,-1.0f,-1.0f,0.0f,
 				-1.0f, 1.0f,-1.0f,0.0f,

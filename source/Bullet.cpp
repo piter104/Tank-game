@@ -61,7 +61,6 @@ void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex)
 		glDisableVertexAttribArray(sp->a("vertex"));  //Wy³¹cz przesy³anie danych do atrybutu vertex
 		glDisableVertexAttribArray(sp->a("color"));
 		glDisableVertexAttribArray(sp->a("normal"));
-
 }
 
 void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size, bool destroyed)
