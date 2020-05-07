@@ -12,6 +12,7 @@
 #include "allmodels.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
+#include "ParticleSystem.h"
 
 class Bullet
 {
@@ -21,7 +22,6 @@ private:
 	bool collision;
 
 	int shoot_length = 100;
-	int verts = 7500;
 
 	glm::vec3 bullet_size = glm::vec3(0.3f, 0.3f, 0.3f);
 	glm::vec3 shoot = glm::vec3(0.0f, 0.0f, -1.0f); //spawn kuli
@@ -38,8 +38,8 @@ private:
 	void collision_detector(glm::vec3 object_position, glm::vec3 object_size, bool destroyed);
 
 public:
-	void setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
-	void generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex);
+	void setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals);
+	void generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex, ParticleSystem &system);
 	bool shooting(bool shoot_ball);
 	bool hasCollision(glm::vec3 object_position, glm::vec3 object_size, bool destroyed);
 };

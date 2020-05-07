@@ -28,28 +28,24 @@ private:
 	std::vector< glm::vec4 > vertices;
 	std::vector< glm::vec2 > uvs;
 	std::vector< glm::vec4 > normals; // Won't be used at the moment.
-	std::vector< glm::vec4 > colors;
 
 	std::vector< glm::vec4 > vertices2;
 	std::vector< glm::vec2 > uvs2;
 	std::vector< glm::vec4 > normals2; // Won't be used at the moment.
-	std::vector< glm::vec4 > colors2;
 
 	std::vector< glm::vec4 > vertices3;
 	std::vector< glm::vec2 > uvs3;
 	std::vector< glm::vec4 > normals3; // Won't be used at the moment.
-	std::vector< glm::vec4 > colors3;
 
 	std::vector< glm::vec4 > vertices4;
 	std::vector< glm::vec2 > uvs4;
 	std::vector< glm::vec4 > normals4; // Won't be used at the moment.
-	std::vector< glm::vec4 > colors4;
 
 public:
-	void setObjectBottom(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
-	void setObjectTurret(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
-	void setObjectBarrel(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
-	void setObjectWheel(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
+	void setObjectBottom(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals);
+	void setObjectTurret(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals);
+	void setObjectBarrel(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals);
+	void setObjectWheel(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals);
 
 	glm::vec3 getLufa_cords();
 	glm::vec4 getPosition();

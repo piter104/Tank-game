@@ -21,10 +21,9 @@ private:
 	std::vector< glm::vec4 > vertices;
 	std::vector< glm::vec2 > uvs;
 	std::vector< glm::vec4 > normals; // Won't be used at the moment.
-	std::vector< glm::vec4 > colors;
 
 public:
-	void setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
+	void setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals);
 	void setCords(glm::vec3 coords);
 	void draw(ShaderProgram* sp, GLuint tex);
 };

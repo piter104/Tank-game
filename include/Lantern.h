@@ -29,16 +29,14 @@ private:
 	std::vector< glm::vec4 > vertices;
 	std::vector< glm::vec2 > uvs;
 	std::vector< glm::vec4 > normals; // Won't be used at the moment.
-	std::vector< glm::vec4 > colors;
 
 	std::vector< glm::vec4 > vertices2;
 	std::vector< glm::vec2 > uvs2;
 	std::vector< glm::vec4 > normals2; // Won't be used at the moment.
-	std::vector< glm::vec4 > colors2;
 
 public:
-	void setBottomObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
-	void setLampObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors);
+	void setBottomObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals);
+	void setLampObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals);
 	void destroy();
 	bool is_destroyed();
 	glm::vec3 getPosition();
