@@ -84,9 +84,11 @@ std::vector< glm::vec4 > vertices;
 std::vector< glm::vec2 > uvs;
 std::vector< glm::vec4 > normals;
 
-ShaderProgram* spf;
+
 ShaderProgram* spt;
 ShaderProgram* spp;
+ShaderProgram* spg;
+ShaderProgram* spl;
 
 
 bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals)
@@ -296,9 +298,10 @@ void initOpenGLProgram(GLFWwindow* window) {
 	lantern.setCords(glm::vec3(-4.0f, 0.0f, -4.0f));
 	lantern2.setCords(glm::vec3(-12.0f, 0.0f, -12.0f));
 
-	spf = new ShaderProgram("shaders/v_floor.glsl", NULL, "shaders/f_floor.glsl");
 	spt = new ShaderProgram("shaders/v_text.glsl", NULL, "shaders/f_text.glsl");
 	spp = new ShaderProgram("shaders/v_particle.glsl", NULL, "shaders/f_particle.glsl");
+	spg = new ShaderProgram("shaders/v_floor.glsl", NULL, "shaders/f_floor.glsl");
+	spl = new ShaderProgram("shaders/v_lamp.glsl", NULL, "shaders/f_lamp.glsl");
 
 	floor_texture.readTexture((char*)"textures/ground.png");
 	printf("Loaded ground.png\n");
@@ -377,9 +380,6 @@ void drawScene(GLFWwindow* window) {
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 
-	//if (particleSystem.count == 0 && !shoot_ball) {
-	//	particleSystem.initializeSystem(2000);
-	//}
 
 	if (shoot_ball == true)
 	{
@@ -389,10 +389,10 @@ void drawScene(GLFWwindow* window) {
 
 	shoot_ball = bullet.shooting(shoot_ball);
 
-	lantern.draw(spf, lamp_bottom_texture.tex,lamp_white_texture.tex, cameraPos, cameraFront, cameraUp);
-	lantern2.draw(spf, lamp_bottom_texture.tex, lamp_white_texture.tex, cameraPos, cameraFront, cameraUp);
+	lantern.draw(spt,spl, lamp_bottom_texture.tex,lamp_white_texture.tex, cameraPos, cameraFront, cameraUp);
+	lantern2.draw(spt,spl, lamp_bottom_texture.tex, lamp_white_texture.tex, cameraPos, cameraFront, cameraUp);
 
-	ground.draw_floor(P, V, floor_texture.tex, spt);
+	ground.draw_floor(P, V, floor_texture.tex, spg);
 
 	if (!bullet.hasCollision(box.getPosition(), box.getSize(), box.is_destroyed()))
 	{

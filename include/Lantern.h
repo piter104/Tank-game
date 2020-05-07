@@ -42,7 +42,7 @@ public:
 	glm::vec3 getPosition();
 	glm::vec3 getSize();
 	void setCords(glm::vec3 coords);
-	void draw(ShaderProgram* sp, GLuint tex, GLuint tex2, glm::vec3 cameraPos, glm::vec3 cameraFront, glm::vec3 cameraUp);
+	void draw(ShaderProgram* sp, ShaderProgram* spl, GLuint tex, GLuint tex2, glm::vec3 cameraPos, glm::vec3 cameraFront, glm::vec3 cameraUp);
 };
 
 #endif
