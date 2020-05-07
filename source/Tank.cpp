@@ -4,36 +4,32 @@
 #include "include/lodepng.h"
 #include "include/shaderprogram.h"
 
-void Tank::setObjectBottom(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors)
+void Tank::setObjectBottom(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals)
 {
 	vertices = out_vertices;
 	uvs = out_uvs;
 	normals = out_normals; // Won't be used at the moment.
-	colors = out_colors;
 }
 
-void Tank::setObjectTurret(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors)
+void Tank::setObjectTurret(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals)
 {
 	vertices2 = out_vertices;
 	uvs2 = out_uvs;
 	normals2 = out_normals; // Won't be used at the moment.
-	colors2 = out_colors;
 }
 
-void Tank::setObjectBarrel(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors)
+void Tank::setObjectBarrel(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals)
 {
 	vertices3 = out_vertices;
 	uvs3 = out_uvs;
 	normals3 = out_normals; // Won't be used at the moment.
-	colors3 = out_colors;
 }
 
-void Tank::setObjectWheel(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors)
+void Tank::setObjectWheel(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals)
 {
 	vertices4 = out_vertices;
 	uvs4 = out_uvs;
 	normals4 = out_normals; // Won't be used at the moment.
-	colors4 = out_colors;
 }
 
 glm::vec3 Tank::getLufa_cords()
@@ -97,11 +93,9 @@ void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_spee
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M)); //Za³aduj do programu cieniuj¹cego macierz modelu
 
 	glEnableVertexAttribArray(sp->a("vertex"));  //W³¹cz przesy³anie danych do atrybutu vertex
-	glEnableVertexAttribArray(sp->a("color"));
 	glEnableVertexAttribArray(sp->a("normal"));
 
 	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices[0]); //Wska¿ tablicê z danymi dla atrybutu vertex
-	glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors[0]);
 	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
 	
 	glEnableVertexAttribArray(sp->a("aTexCoord"));
@@ -125,7 +119,6 @@ void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_spee
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_wieza)); //Za³aduj do programu cieniuj¹cego macierz modelu
 
 	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices2[0]); //Wska¿ tablicê z danymi dla atrybutu vertex
-	glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors2[0]);
 	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals2[0]);
 
 
@@ -140,7 +133,6 @@ void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_spee
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_lufa)); //Za³aduj do programu cieniuj¹cego macierz modelu
 
 	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices3[0]); //Wska¿ tablicê z danymi dla atrybutu vertex
-	glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors3[0]);
 	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals3[0]);
 
 
@@ -163,7 +155,6 @@ void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_spee
 			glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_wheel)); //Za³aduj do programu cieniuj¹cego macierz modelu
 			
 			glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices4[0]); //Wska¿ tablicê z danymi dla atrybutu vertex
-			glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors4[0]);
 			glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals4[0]);
 
 			glEnableVertexAttribArray(sp->a("aTexCoord"));
@@ -179,7 +170,6 @@ void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_spee
 	}
 
 	glDisableVertexAttribArray(sp->a("vertex"));  //Wy³¹cz przesy³anie danych do atrybutu vertex
-	glDisableVertexAttribArray(sp->a("color"));
 	glDisableVertexAttribArray(sp->a("normal"));
 
 	}

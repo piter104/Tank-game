@@ -34,7 +34,6 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "include/ParticleSystem.h"
 
 
-
 Bullet bullet = Bullet();
 Tank tank = Tank();
 Box box = Box();
@@ -69,10 +68,6 @@ float wheel_speed_left = 0.0f;
 const float movingSpeed = 0.1f;
 const float rotateSpeed = PI / 2;
 
-//float v[8000];
-//float colors_particles[8000];
-//int count = 0;
-
 bool w_press = false;
 bool s_press = false;
 bool a_press = false;
@@ -87,129 +82,26 @@ glm::vec3 camera_transform = glm::vec3(0.0f, 4.0f, 12.0f);
 
 std::vector< glm::vec4 > vertices;
 std::vector< glm::vec2 > uvs;
-std::vector< glm::vec4 > normals; // Won't be used at the moment.
-std::vector< glm::vec4 > colors;
+std::vector< glm::vec4 > normals;
 
-std::vector< glm::vec4 > vertices2;
-std::vector< glm::vec2 > uvs2;
-std::vector< glm::vec4 > normals2; // Won't be used at the moment.
-std::vector< glm::vec4 > colors2;
-
-std::vector< glm::vec4 > vertices3;
-std::vector< glm::vec2 > uvs3;
-std::vector< glm::vec4 > normals3; // Won't be used at the moment.
-std::vector< glm::vec4 > colors3;
-
-std::vector< glm::vec4 > vertices4;
-std::vector< glm::vec2 > uvs4;
-std::vector< glm::vec4 > normals4; // Won't be used at the moment.
-std::vector< glm::vec4 > colors4;
-
-std::vector< glm::vec4 > vertices5;
-std::vector< glm::vec2 > uvs5;
-std::vector< glm::vec4 > normals5; // Won't be used at the moment.
-std::vector< glm::vec4 > colors5;
-
-
-std::vector< glm::vec4 > vertices6;
-std::vector< glm::vec2 > uvs6;
-std::vector< glm::vec4 > normals6; // Won't be used at the moment.
-std::vector< glm::vec4 > colors6;
-
-std::vector< glm::vec4 > vertices7;
-std::vector< glm::vec2 > uvs7;
-std::vector< glm::vec4 > normals7; // Won't be used at the moment.
-std::vector< glm::vec4 > colors7;
-
-std::vector< glm::vec4 > vertices8;
-std::vector< glm::vec2 > uvs8;
-std::vector< glm::vec4 > normals8; // Won't be used at the moment.
-std::vector< glm::vec4 > colors8;
-
-std::vector< glm::vec4 > vertices9;
-std::vector< glm::vec2 > uvs9;
-std::vector< glm::vec4 > normals9; // Won't be used at the moment.
-std::vector< glm::vec4 > colors9;
-
-ShaderProgram* sp;
 ShaderProgram* spf;
-ShaderProgram* spl;
 ShaderProgram* spt;
 ShaderProgram* spp;
 
 
-//struct Particle {
-//	glm::vec3 position; //Położenie cząstki
-//	glm::vec3 speed; //Prędkość cząstki
-//	glm::vec4 color;
-//	float ttl; //Czas życia
-//};
-//const int n = 2000; //Liczba cząstek
-//
-//Particle system2[n]; //Tablica cząstek
-//
-//glm::vec3 gravity = glm::vec3(0, 0, 0); //Wektor grawitacji
-//
-//float rand_gen() {
-//	// return a uniformly distributed random value
-//	return ((float)(rand()) + 1.) / ((float)(RAND_MAX)+1.);
-//}
-//float normalRandom() {
-//	// return a normally distributed random value
-//	float v1 = rand_gen();
-//	float v2 = rand_gen();
-//	return cos(2 * 3.14 * v2) * sqrt(-2. * log(v1));
-//}
-//
-//void createParticle(Particle& p) { //Zainicjowanie cząstki
-//	p.position = glm::vec3(0, 10.0f, 0);
-//	p.speed = glm::vec3(normalRandom() * 0.5 + 0, normalRandom() * 0.5 + 0, normalRandom() * 0.5 + 0);
-//	p.color = glm::vec4(glm::clamp((normalRandom() * 0.5f + 1), 0.2f, 1.0f), glm::clamp((normalRandom() * 0.4f + 0.3f), 0.0f, 0.5f), 0.0f, 1.0f);
-//	p.ttl = glm::clamp(normalRandom() * 3 + 10, 0.0f, 10.0f);
-//}
-//void initializeSystem(Particle* system2, int n) {//Zainicjowanie każdej cząstki
-//	for (int i = 0; i < n; i++)
-//		createParticle(system2[i]);
-//	count = n;
-//}
-//
-//void processSystem(Particle* system2, glm::vec3 gravity, int n, float timestep) {
-//	if (count > 0) {
-//		count = 0;
-//		for (int i = 0; i < n; i++)
-//		{
-//			system2[i].position += system2[i].speed * timestep; //przesunięcie
-//			system2[i].color.r = glm::clamp(system2[i].color.r, 0.5f - system2[i].ttl / 30.0f, 0.5f + system2[i].ttl / 30.0f);
-//			system2[i].color.g = glm::clamp(system2[i].color.g, 0.5f - system2[i].ttl / 30.0f, 0.5f + system2[i].ttl / 30.0f);
-//			system2[i].color.b = glm::clamp(system2[i].color.b, 0.5f - system2[i].ttl / 30.0f, 0.5f + system2[i].ttl / 30.0f);
-//			system2[i].speed += gravity * timestep; //uwzględnienie grawitacji
-//			system2[i].ttl -= timestep; //Skrócenie czasu życia cząstki
-//			if (system2[i].ttl > 0) {
-//				v[i * 4] = system2[i].position.x;
-//				v[i * 4 + 1] = system2[i].position.y;
-//				v[i * 4 + 2] = system2[i].position.z;
-//				v[i * 4 + 3] = 1;
-//
-//				colors_particles[i * 4] = system2[i].color.r;
-//				colors_particles[i * 4 + 1] = system2[i].color.g;
-//				colors_particles[i * 4 + 2] = system2[i].color.b;
-//				colors_particles[i * 4 + 3] = 1.0f;
-//				count += 1;
-//			}
-//		}
-//	}
-//
-//}
-
-
-bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals, std::vector < glm::vec4 >& out_colors)
+bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vector < glm::vec2 >& out_uvs, std::vector < glm::vec4 >& out_normals)
 {
 	std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
 	std::vector< glm::vec4 > temp_vertices;
 	std::vector< glm::vec2 > temp_uvs;
 	std::vector< glm::vec4 > temp_normals;
 
-#pragma warning(suppress : 4996)
+	out_vertices.clear();
+	out_uvs.clear();
+	out_normals.clear();
+
+	//#pragma warning(suppress : 4996)
+	#pragma warning (disable : 4996)
 	FILE* file = fopen(path, "r");
 	if (file == NULL) {
 		printf("Impossible to open the file !\n");
@@ -218,28 +110,22 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 	while (1) {
 		char lineHeader[128];
 		// read the first word of the line
-#pragma warning(suppress : 4996)
 		int res = fscanf(file, "%s", lineHeader);
-		//printf("%s", lineHeader);
 		if (res == EOF)
 			break; // EOF = End Of File. Quit the loop.
-
 		if (strcmp(lineHeader, "v") == 0) {
 			glm::vec4 vertex;
-#pragma warning(suppress : 4996)
 			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
 			vertex.a = 1.0f;
 			temp_vertices.push_back(vertex);
 		}
 		else if (strcmp(lineHeader, "vt") == 0) {
 			glm::vec2 uv;
-#pragma warning(suppress : 4996)
 			fscanf(file, "%f %f\n", &uv.x, &uv.y);
 			temp_uvs.push_back(uv);
 		}
 		else if (strcmp(lineHeader, "vn") == 0) {
 			glm::vec4 normal;
-#pragma warning(suppress : 4996)
 			fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
 			normal.a = 0.0f;
 			temp_normals.push_back(normal);
@@ -247,8 +133,6 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 		else if (strcmp(lineHeader, "f") == 0) {
 			std::string vertex1, vertex2, vertex3;
 			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
-
-#pragma warning(suppress : 4996)
 			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
 			if (matches != 9) {
 				printf("File can't be read by our simple parser : ( Try exporting with other options\n");
@@ -257,7 +141,6 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 			vertexIndices.push_back(vertexIndex[0]);
 			vertexIndices.push_back(vertexIndex[1]);
 			vertexIndices.push_back(vertexIndex[2]);
-
 			uvIndices.push_back(uvIndex[0]);
 			uvIndices.push_back(uvIndex[1]);
 			uvIndices.push_back(uvIndex[2]);
@@ -279,11 +162,6 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 		unsigned int normalIndex = normalIndices[i];
 		glm::vec4 normal = temp_normals[normalIndex - 1];
 		out_normals.push_back(normal);
-
-		// to jest tutaj tylko po to, ¿eby jebn¹æ kolor bo nie umiem w tesktury :/
-		glm::vec4 color;
-		color.x = 0.08; color.y = 0.6; color.z = 0.25; color.w = 1;
-		out_colors.push_back(color);
 	}
 	return true;
 }
@@ -340,7 +218,6 @@ void key_callback(GLFWwindow* window, int key,
 		d_press = true;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE)
 		d_press = false;
-
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		shoot_ball = true;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -371,48 +248,45 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
 
-	bool res = loadOBJ("objects/redkin_shell.obj", vertices, uvs, normals, colors);
-	printf("%d", res);
-	bullet.setObject(vertices, uvs, normals, colors);
+	bool res = loadOBJ("objects/bullet.obj", vertices, uvs, normals);
+	printf("Loaded bullet.obj %d\n", res);
+	bullet.setObject(vertices, uvs, normals);
 
-	res = loadOBJ("objects/box.obj", vertices2, uvs2, normals2, colors2);
-	printf("%d", res);
-	box.setObject(vertices2, uvs2, normals2, colors2);
+	res = loadOBJ("objects/box.obj", vertices, uvs, normals);
+	printf("Loaded box.obj %d\n", res);
+	box.setObject(vertices, uvs, normals);
 
-	res = loadOBJ("objects/lamp_bottom.obj", vertices3, uvs3, normals3, colors3);
-	printf("%d", res);
-	lantern.setBottomObject(vertices3, uvs3, normals3, colors3);
-	lantern2.setBottomObject(vertices3, uvs3, normals3, colors3);
+	res = loadOBJ("objects/lampa_bottom.obj", vertices, uvs, normals);
+	printf("Loaded lampa_bottom.obj %d\n", res);
+	lantern.setBottomObject(vertices, uvs, normals);
+	lantern2.setBottomObject(vertices, uvs, normals);
 
-	res = loadOBJ("objects/lamp.obj", vertices9, uvs9, normals9, colors9);
-	printf("%d", res);
+	res = loadOBJ("objects/lamp.obj", vertices, uvs, normals);
+	printf("Loaded lamp.obj %d\n", res);
 
-	lantern.setLampObject(vertices9, uvs9, normals9, colors9);
-	lantern2.setLampObject(vertices9, uvs9, normals9, colors9);
+	lantern.setLampObject(vertices, uvs, normals);
+	lantern2.setLampObject(vertices, uvs, normals);
 
-	res = loadOBJ("objects/bottom.obj", vertices4, uvs4, normals4, colors4);
-	printf("%d", res);
-	tank.setObjectBottom(vertices4, uvs4, normals4, colors4);
+	res = loadOBJ("objects/bottom.obj", vertices, uvs, normals);
+	printf("Loaded bottom.obj %d\n", res);
+	tank.setObjectBottom(vertices, uvs, normals);
 
-	res = loadOBJ("objects/turret.obj", vertices5, uvs5, normals5, colors5);
-	printf("%d", res);
-	tank.setObjectTurret(vertices5, uvs5, normals5, colors5);
+	res = loadOBJ("objects/turret.obj", vertices, uvs, normals);
+	printf("Loaded turret.obj %d\n", res);
+	tank.setObjectTurret(vertices, uvs, normals);
 
-	res = loadOBJ("objects/lufa.obj", vertices6, uvs6, normals6, colors6);
-	printf("%d", res);
-	tank.setObjectBarrel(vertices6, uvs6, normals6, colors6);
+	res = loadOBJ("objects/lufa.obj", vertices, uvs, normals);
+	printf("Loaded lufa.obj %d\n", res);
+	tank.setObjectBarrel(vertices, uvs, normals);
 
-	res = loadOBJ("objects/wheel3.obj", vertices7, uvs7, normals7, colors7);
-	printf("%d", res);
-	tank.setObjectWheel(vertices7, uvs7, normals7, colors7);
+	res = loadOBJ("objects/wheel.obj", vertices, uvs, normals);
+	printf("Loaded wheel.obj %d\n", res);
+	tank.setObjectWheel(vertices, uvs, normals);
 
-	res = loadOBJ("objects/tree2.obj", vertices8, uvs8, normals8, colors8);
-	printf("%d", res);
-
-
-
-	tree.setObject(vertices8, uvs8, normals8, colors8);
-	tree2.setObject(vertices8, uvs8, normals8, colors8);
+	res = loadOBJ("objects/tree.obj", vertices, uvs, normals);
+	printf("Loaded tree.obj %d\n", res);
+	tree.setObject(vertices, uvs, normals);
+	tree2.setObject(vertices, uvs, normals);
 
 	tree.setCords(glm::vec3(2.0f, 0.0f, -20.0f));
 	tree2.setCords(glm::vec3(-17.0f, 0.0f, 10.0f));
@@ -422,22 +296,28 @@ void initOpenGLProgram(GLFWwindow* window) {
 	lantern.setCords(glm::vec3(-4.0f, 0.0f, -4.0f));
 	lantern2.setCords(glm::vec3(-12.0f, 0.0f, -12.0f));
 
-	sp = new ShaderProgram("shaders/v_simplest.glsl", NULL, "shaders/f_simplest.glsl");
 	spf = new ShaderProgram("shaders/v_floor.glsl", NULL, "shaders/f_floor.glsl");
-	spl = new ShaderProgram("shaders/v_lantern.glsl", NULL, "shaders/f_lantern.glsl");
 	spt = new ShaderProgram("shaders/v_text.glsl", NULL, "shaders/f_text.glsl");
 	spp = new ShaderProgram("shaders/v_particle.glsl", NULL, "shaders/f_particle.glsl");
 
 	floor_texture.readTexture((char*)"textures/ground.png");
-	lamp_bottom_texture.readTexture((char*)"textures/lantern_botom_tex.png");
-	lamp_white_texture.readTexture((char*)"textures/lamp_tex.png");
+	printf("Loaded ground.png\n");
+	lamp_bottom_texture.readTexture((char*)"textures/lantern_botom.png");
+	printf("Loaded lantern_botom.png\n");
+	lamp_white_texture.readTexture((char*)"textures/lamp.png");
+	printf("Loaded lamp.png\n");
 	box_texture.readTexture((char*)"textures/light_wood.png");
-	tree_texture.readTexture((char*)"textures/tree2.png");
-	bullet_texture.readTexture((char*)"textures/redkin.png");
+	printf("Loaded light_wood.png\n");
+	tree_texture.readTexture((char*)"textures/tree.png");
+	printf("Loaded tree.png\n");
+	bullet_texture.readTexture((char*)"textures/bullet.png");
+	printf("Loaded bullet.png\n");
 	wheel_texture.readTexture((char*)"textures/wheel.png");
-	tank_texture.readTexture((char*)"textures/tank3.png");
-
+	printf("Loaded wheel.png\n");
+	tank_texture.readTexture((char*)"textures/tank.png");
+	printf("Loaded tank.png\n");
 	particleSystem.initializeSystem(2000);
+	printf("Loaded particleSystem\n");
 }
 
 
@@ -445,7 +325,13 @@ void initOpenGLProgram(GLFWwindow* window) {
 void freeOpenGLProgram(GLFWwindow* window) {
 	//freeShaders();
 	glDeleteTextures(1, &floor_texture.tex);
-	//************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************
+	glDeleteTextures(1, &lamp_bottom_texture.tex);
+	glDeleteTextures(1, &lamp_white_texture.tex);
+	glDeleteTextures(1, &box_texture.tex);
+	glDeleteTextures(1, &tree_texture.tex);
+	glDeleteTextures(1, &bullet_texture.tex);
+	glDeleteTextures(1, &wheel_texture.tex);
+	glDeleteTextures(1, &tank_texture.tex);
 }
 
 //Procedura rysująca zawartość sceny
@@ -476,8 +362,6 @@ void drawScene(GLFWwindow* window) {
 	}
 	tank_position = tank.getPosition();
 
-	//printf("%f, %f, %f, %f, %f, %f\n", cameraFront.x, cameraFront.y, cameraFront.z, cameraPos.x, cameraPos.y, cameraPos.z);
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
 
 	spt->use(); //Aktywuj program cieniujący
@@ -493,28 +377,20 @@ void drawScene(GLFWwindow* window) {
 	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
 
-
-	if (particleSystem.count == 0 && !shoot_ball) {
-		particleSystem.initializeSystem(2000);
-	}
+	//if (particleSystem.count == 0 && !shoot_ball) {
+	//	particleSystem.initializeSystem(2000);
+	//}
 
 	if (shoot_ball == true)
 	{
 		particleSystem.drawParticles(P, V, spp, tank.getM_lufa());
-
-
-		bullet.generate(tank.getM_lufa(),  spt, bullet_texture.tex);
+		bullet.generate(tank.getM_lufa(),  spt, bullet_texture.tex, particleSystem);
 	}
 
 	shoot_ball = bullet.shooting(shoot_ball);
 
-
-
 	lantern.draw(spf, lamp_bottom_texture.tex,lamp_white_texture.tex, cameraPos, cameraFront, cameraUp);
 	lantern2.draw(spf, lamp_bottom_texture.tex, lamp_white_texture.tex, cameraPos, cameraFront, cameraUp);
-
-	
-
 
 	ground.draw_floor(P, V, floor_texture.tex, spt);
 
@@ -526,8 +402,6 @@ void drawScene(GLFWwindow* window) {
 	{
 		box.destroy();
 	}
-
-	glUniform4f(sp->u("color"), 0, 1, 0, 1);
 
 	glfwSwapBuffers(window); //Skopiuj bufor tylny do bufora przedniego
 }

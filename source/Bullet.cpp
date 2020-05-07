@@ -1,11 +1,10 @@
 #include "include/Bullet.h"
 
-void Bullet::setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals, std::vector < glm::vec4 > out_colors)
+void Bullet::setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals)
 {
 	vertices = out_vertices;
 	uvs = out_uvs;
 	normals = out_normals; // Won't be used at the moment.
-	colors = out_colors;
 }
 
 
@@ -27,11 +26,13 @@ bool Bullet::shooting(bool shoot_ball)
 	}
 }
 
-void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex)
+void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex, ParticleSystem &system)
 {
 		if (first_frame_shot == true) {
 			M_copy = M_lufa;
+			system.initializeSystem(2000);
 			first_frame_shot = false;
+			
 		}
 		
 		Mp1 = glm::translate(M_copy, glm::vec3(shoot[0] - 0.2f, shoot[1], shoot[2])); //...i macierz przesuniêcia
@@ -43,10 +44,8 @@ void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex)
 		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(Mp1));
 
 		glEnableVertexAttribArray(sp->a("vertex"));  //W³¹cz przesy³anie danych do atrybutu vertex
-		glEnableVertexAttribArray(sp->a("color"));
 		glEnableVertexAttribArray(sp->a("normal"));
 		glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices[0]); //Wska¿ tablicê z danymi dla atrybutu vertex
-		glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, &colors[0]);
 		glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
 
 
@@ -56,10 +55,9 @@ void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex)
 		glBindTexture(GL_TEXTURE_2D, tex);
 		glUniform1i(sp->u("ourTexture1"), 0);
 
-		glDrawArrays(GL_TRIANGLES, 0, verts); //Narysuj obiekt
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size()); //Narysuj obiekt
 
 		glDisableVertexAttribArray(sp->a("vertex"));  //Wy³¹cz przesy³anie danych do atrybutu vertex
-		glDisableVertexAttribArray(sp->a("color"));
 		glDisableVertexAttribArray(sp->a("normal"));
 }
 
