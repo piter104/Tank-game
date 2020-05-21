@@ -4,7 +4,7 @@ void Bullet::setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm
 {
 	vertices = out_vertices;
 	uvs = out_uvs;
-	normals = out_normals; // Won't be used at the moment.
+	normals = out_normals;
 }
 
 
@@ -35,17 +35,17 @@ void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex, ParticleS
 			
 		}
 		
-		Mp1 = glm::translate(M_copy, glm::vec3(shoot[0] - 0.2f, shoot[1], shoot[2])); //...i macierz przesuniêcia
+		Mp1 = glm::translate(M_copy, glm::vec3(shoot[0] - 0.2f, shoot[1], shoot[2]));
 		Mp1 = glm::rotate(Mp1, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		Mp1 = glm::scale(Mp1, glm::vec3(bullet_size));
 
-		sp->use();//Aktywacja programu cieniuj¹cego
+		sp->use();
 
 		glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(Mp1));
 
-		glEnableVertexAttribArray(sp->a("vertex"));  //W³¹cz przesy³anie danych do atrybutu vertex
+		glEnableVertexAttribArray(sp->a("vertex"));
 		glEnableVertexAttribArray(sp->a("normal"));
-		glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices[0]); //Wska¿ tablicê z danymi dla atrybutu vertex
+		glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices[0]);
 		glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
 
 
@@ -55,25 +55,28 @@ void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex, ParticleS
 		glBindTexture(GL_TEXTURE_2D, tex);
 		glUniform1i(sp->u("ourTexture1"), 0);
 
-		glDrawArrays(GL_TRIANGLES, 0, vertices.size()); //Narysuj obiekt
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
-		glDisableVertexAttribArray(sp->a("vertex"));  //Wy³¹cz przesy³anie danych do atrybutu vertex
+		glDisableVertexAttribArray(sp->a("vertex"));
 		glDisableVertexAttribArray(sp->a("normal"));
 }
 
 void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size, bool destroyed)
 {
 	glm::vec4 bullet_position = Mp1 * Position;
-	// Collision x
+
+	// kolizja w osi x
 	bool collisionX = object_position.x + object_size.x >= bullet_position.x &&
 		bullet_position.x + bullet_size.x >= object_position.x;
-	// Collision y
+
+	// kolizja w osi y
 	bool collisionY = object_position.y + object_size.y >= bullet_position.y &&
 		bullet_position.y + bullet_size.y >= object_position.y;
-	// Collison z
+
+	// kolizja w osi z
 	bool collisionZ = object_position.z + object_size.z >= bullet_position.z &&
 		bullet_position.z + bullet_size.z >= object_position.z;
-	// Collision only if on three axes
+
 	if (collisionX && collisionY && collisionZ && !destroyed)
 	{
 		counter = shoot_length;

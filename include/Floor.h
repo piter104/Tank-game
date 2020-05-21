@@ -46,7 +46,7 @@ public:
 				0.0f, 0.0f,-1.0f,0.0f,
 	};
 
-	//Tablica wspó³rzêdnych teksturowania
+	//Tablica wspólrzednych teksturowania
 	float texCoords[12] = {
 	  200.0f, 0.0f,   //A
 	  0.0f, 200.0f,    //B
@@ -57,7 +57,7 @@ public:
 	  0.0f, 200.0f,    //B
 	};
 
-	//Liczba wierzcho³ków w tablicy
+	//Liczba wierzcholków w tablicy
 	int vertexCount = 6;
 
 	Floor();

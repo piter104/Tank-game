@@ -17,15 +17,17 @@
 class Lantern
 {
 private:
-	int verts = 965;
-
+	//wspolrzedne obiektu
 	glm::vec3 coordinates;
+
+	//rozmiar obiektu
 	glm::vec3 lantern_size = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	//macierze obiektu
 	glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
-	glm::mat4 M_lantern = glm::mat4(1.0f); //Zainicjuj macierz modelu macierz¹ jednostkow¹
+	glm::mat4 M_lantern = glm::mat4(1.0f);
 
-	bool destroyed = false;
-
+	//wektory obiektow
 	std::vector< glm::vec4 > vertices;
 	std::vector< glm::vec2 > uvs;
 	std::vector< glm::vec4 > normals; // Won't be used at the moment.
@@ -37,8 +39,6 @@ private:
 public:
 	void setBottomObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals);
 	void setLampObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals);
-	void destroy();
-	bool is_destroyed();
 	glm::vec3 getPosition();
 	glm::vec3 getSize();
 	void setCords(glm::vec3 coords);

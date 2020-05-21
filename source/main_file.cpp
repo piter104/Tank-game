@@ -102,7 +102,6 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 	out_uvs.clear();
 	out_normals.clear();
 
-	//#pragma warning(suppress : 4996)
 	#pragma warning (disable : 4996)
 	FILE* file = fopen(path, "r");
 	if (file == NULL) {
@@ -111,10 +110,10 @@ bool loadOBJ(const char* path, std::vector < glm::vec4 >& out_vertices, std::vec
 	}
 	while (1) {
 		char lineHeader[128];
-		// read the first word of the line
+		//pierwsze slowo linii
 		int res = fscanf(file, "%s", lineHeader);
 		if (res == EOF)
-			break; // EOF = End Of File. Quit the loop.
+			break;
 		if (strcmp(lineHeader, "v") == 0) {
 			glm::vec4 vertex;
 			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
@@ -175,7 +174,7 @@ void freeOpenGLProgram(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	float xoffset = lastX - xpos;
-	float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
+	float yoffset = lastY - ypos;
 	lastX = xpos;
 	lastY = ypos;
 
@@ -226,8 +225,8 @@ void key_callback(GLFWwindow* window, int key,
 	{
 		freeOpenGLProgram(window);
 
-		glfwDestroyWindow(window); //Usuń kontekst OpenGL i okno
-		glfwTerminate(); //Zwolnij zasoby zajęte przez GLFW
+		glfwDestroyWindow(window);
+		glfwTerminate();
 		exit(EXIT_SUCCESS);
 	}
 }
@@ -240,15 +239,14 @@ void error_callback(int error, const char* description) {
 
 //Procedura inicjująca
 void initOpenGLProgram(GLFWwindow* window) {
-	//initShaders();
-	//************Tutaj umieszczaj kod, który należy wykonać raz, na początku programu************
-	glClearColor(0.3, 0.8, 1, 1); //Ustaw kolor czyszczenia bufora kolorów
-	glEnable(GL_DEPTH_TEST); //Włącz test głębokości na pikselach
+
+	glClearColor(0.3, 0.8, 1, 1);
+	glEnable(GL_DEPTH_TEST);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, mouse_callback); //Zarejestruj procedurę obsługi myszki
+	glfwSetCursorPosCallback(window, mouse_callback);
 
-	glfwSetKeyCallback(window, key_callback); //Zarejestruj procedurę obsługi klawiatury
+	glfwSetKeyCallback(window, key_callback);
 
 	bool res = loadOBJ("objects/bullet.obj", vertices, uvs, normals);
 	printf("Loaded bullet.obj %d\n", res);
@@ -326,7 +324,6 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 //Zwolnienie zasobów zajętych przez program
 void freeOpenGLProgram(GLFWwindow* window) {
-	//freeShaders();
 	glDeleteTextures(1, &floor_texture.tex);
 	glDeleteTextures(1, &lamp_bottom_texture.tex);
 	glDeleteTextures(1, &lamp_white_texture.tex);
@@ -339,7 +336,6 @@ void freeOpenGLProgram(GLFWwindow* window) {
 
 //Procedura rysująca zawartość sceny
 void drawScene(GLFWwindow* window) {
-	//************Tutaj umieszczaj kod rysujący obraz******************
 	if (w_press) {
 		speed_vector.z -= movingSpeed * sin(angle * PI / 180);
 		speed_vector.x += movingSpeed * cos(angle * PI / 180);
@@ -365,9 +361,9 @@ void drawScene(GLFWwindow* window) {
 	}
 	tank_position = tank.getPosition();
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Wyczyść bufor koloru i bufor głębokości
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	spt->use(); //Aktywuj program cieniujący
+	spt->use();
 
 	glUniform4f(spt->u("lp"), -4, 3.5, -4, 1);
 	glUniform4f(spt->u("lp2"), -12, 3, -12, 1);
@@ -377,8 +373,8 @@ void drawScene(GLFWwindow* window) {
 	tree.draw(spt, tree_texture.tex);
 	tree2.draw(spt, tree_texture.tex);
 
-	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp); //Wylicz macierz widoku
-	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Wylicz macierz rzutowania
+	glm::mat4 V = glm::lookAt(cameraPos, cameraFront, cameraUp);
+	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
 
 
 	if (shoot_ball == true)
@@ -403,51 +399,53 @@ void drawScene(GLFWwindow* window) {
 		box.destroy();
 	}
 
-	glfwSwapBuffers(window); //Skopiuj bufor tylny do bufora przedniego
+	glfwSwapBuffers(window);
 }
 
 
 int main(void)
 {
-	GLFWwindow* window; //Wskaźnik na obiekt reprezentujący okno
+	GLFWwindow* window;
 
-	glfwSetErrorCallback(error_callback);//Zarejestruj procedurę obsługi błędów
+	glfwSetErrorCallback(error_callback);
 
-	if (!glfwInit()) { //Zainicjuj bibliotekę GLFW
+	if (!glfwInit()) 
+	{ 
 		fprintf(stderr, "Nie można zainicjować GLFW.\n");
 		exit(EXIT_FAILURE);
 	}
 
-	window = glfwCreateWindow(1000, 800, "OpenGL", NULL, NULL);  //Utwórz okno 500x500 o tytule "OpenGL" i kontekst OpenGL.
+	window = glfwCreateWindow(1000, 800, "OpenGL", NULL, NULL);
 
-	if (!window) //Jeżeli okna nie udało się utworzyć, to zamknij program
+	if (!window)
 	{
 		fprintf(stderr, "Nie można utworzyć okna.\n");
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 
-	glfwMakeContextCurrent(window); //Od tego momentu kontekst okna staje się aktywny i polecenia OpenGL będą dotyczyć właśnie jego.
-	glfwSwapInterval(1); //Czekaj na 1 powrót plamki przed pokazaniem ukrytego bufora
+	glfwMakeContextCurrent(window);
+	glfwSwapInterval(1);
 
-	if (glewInit() != GLEW_OK) { //Zainicjuj bibliotekę GLEW
+	if (glewInit() != GLEW_OK) 
+	{ 
 		fprintf(stderr, "Nie można zainicjować GLEW.\n");
 		exit(EXIT_FAILURE);
 	}
 
-	initOpenGLProgram(window); //Operacje inicjujące
+	initOpenGLProgram(window);
 
 
 	//Główna pętla
-	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
+	while (!glfwWindowShouldClose(window))
 	{
-		drawScene(window); //Wykonaj procedurę rysującą
-		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
+		drawScene(window);
+		glfwPollEvents();
 	}
 
 	freeOpenGLProgram(window);
 
-	glfwDestroyWindow(window); //Usuń kontekst OpenGL i okno
-	glfwTerminate(); //Zwolnij zasoby zajęte przez GLFW
+	glfwDestroyWindow(window);
+	glfwTerminate();
 	exit(EXIT_SUCCESS);
 }

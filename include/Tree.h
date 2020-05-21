@@ -16,11 +16,13 @@
 class Tree
 {
 private:
-	glm::vec3 coordinates = glm::vec3(4.0f, 0.0f, -4.0f);
+	//wspolrzedne obiektu
+	glm::vec3 coordinates;
 
+	//wektory
 	std::vector< glm::vec4 > vertices;
 	std::vector< glm::vec2 > uvs;
-	std::vector< glm::vec4 > normals; // Won't be used at the moment.
+	std::vector< glm::vec4 > normals;
 
 public:
 	void setObject(std::vector < glm::vec4 > out_vertices, std::vector < glm::vec2 > out_uvs, std::vector < glm::vec4 > out_normals);
