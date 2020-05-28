@@ -62,6 +62,7 @@ void Lantern::draw(ShaderProgram* sp, ShaderProgram* spl, GLuint tex, GLuint tex
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 	glDisableVertexAttribArray(sp->a("vertex"));
 	glDisableVertexAttribArray(sp->a("normal"));
+	glDisableVertexAttribArray(sp->a("aTexCoord"));
 
 	spl->use();
 

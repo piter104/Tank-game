@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "constants.h"
-#include "allmodels.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
 
@@ -18,32 +17,23 @@ class Floor
 public:
 
 	float verts[24] = {
-	  1.0f,-1.0f,0.0f,1.0f, //A
-	 -1.0f, 1.0f,0.0f,1.0f, //B
-	 -1.0f,-1.0f,0.0f,1.0f, //C
+		  1.0f,-1.0f,0.0f,1.0f, //A
+		 -1.0f, 1.0f,0.0f,1.0f, //B
+		 -1.0f,-1.0f,0.0f,1.0f, //C
 
-	  1.0f,-1.0f,0.0f,1.0f, //A
-	  1.0f, 1.0f,0.0f,1.0f, //D
-	 -1.0f, 1.0f,0.0f,1.0f, //B
-	};
-
-	float colors[24] = {
- 0.73f,0.5f,0.3f,1.0f, //A
- 0.73f,0.5f,0.3f,1.0f, //A
- 0.73f,0.5f,0.3f,1.0f, //A
-  0.73f,0.5f,0.3f,1.0f, //A
-   0.73f,0.5f,0.3f,1.0f, //A
-	0.73f,0.5f,0.3f,1.0f, //A
+		  1.0f,-1.0f,0.0f,1.0f, //A
+		  1.0f, 1.0f,0.0f,1.0f, //D
+		 -1.0f, 1.0f,0.0f,1.0f, //B
 	};
 
 	float normals[24] = {
-				0.0f, 0.0f,-1.0f,0.0f,
-				0.0f, 0.0f,-1.0f,0.0f,
-				0.0f, 0.0f,-1.0f,0.0f,
+		0.0f, 0.0f,-1.0f,0.0f,
+		0.0f, 0.0f,-1.0f,0.0f,
+		0.0f, 0.0f,-1.0f,0.0f,
 
-				0.0f, 0.0f,-1.0f,0.0f,
-				0.0f, 0.0f,-1.0f,0.0f,
-				0.0f, 0.0f,-1.0f,0.0f,
+		0.0f, 0.0f,-1.0f,0.0f,
+		0.0f, 0.0f,-1.0f,0.0f,
+		0.0f, 0.0f,-1.0f,0.0f,
 	};
 
 	//Tablica wspólrzednych teksturowania

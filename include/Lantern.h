@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "constants.h"
-#include "allmodels.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
 
@@ -23,8 +22,8 @@ private:
 	//rozmiar obiektu
 	glm::vec3 lantern_size = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	//macierze obiektu
 	glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
+	//macierz obiektu
 	glm::mat4 M_lantern = glm::mat4(1.0f);
 
 	//wektory obiektow

@@ -366,7 +366,7 @@ void drawScene(GLFWwindow* window) {
 	spt->use();
 
 	glUniform4f(spt->u("lp"), -4, 3.5, -4, 1);
-	glUniform4f(spt->u("lp2"), -12, 3, -12, 1);
+	glUniform4f(spt->u("lp2"), -12, 3.5, -12, 1);
 
 	tank.move(speed_vector, wheel_speed_left, wheel_speed_right, angle, pitch, yaw, camera_transform, cameraFront, cameraPos, cameraUp, spt, tank_texture.tex, wheel_texture.tex);
 

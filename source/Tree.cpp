@@ -41,4 +41,5 @@ void Tree::draw(ShaderProgram* sp,  GLuint tex)
 
 	glDisableVertexAttribArray(sp->a("vertex"));
 	glDisableVertexAttribArray(sp->a("normal"));
+	glDisableVertexAttribArray(sp->a("aTexCoord"));
 }

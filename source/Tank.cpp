@@ -1,6 +1,5 @@
 #include "include/Tank.h"
 #include "include/constants.h"
-#include "include/allmodels.h"
 #include "include/lodepng.h"
 #include "include/shaderprogram.h"
 
@@ -58,20 +57,6 @@ glm::mat4 Tank::getM()
 }
 
 
-
-bool Tank::collision_detector(glm::vec3 object_position, glm::vec3 object_size)
-{
-	// kolizja w osi x
-	bool collisionX = object_position.x + object_size.x >= tank_position.x &&
-		tank_position.x + tank_size.x >= object_position.x;
-
-	// kolizja w osi z
-	bool collisionY = object_position.z + object_size.z >= tank_position.z &&
-		tank_position.z + tank_size.z >= object_position.z;
-
-	return collisionX && collisionY;
-}
-
 void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_speed_right, float angle, float pitch, float yaw, glm::vec3 &camera_transform, glm::vec3 &cameraFront, glm::vec3 &cameraPos, glm::vec3 cameraUp, ShaderProgram *sp, GLuint tex, GLuint tex2)
 {
 	glm::mat4 M = glm::mat4(1.0f);
@@ -103,7 +88,6 @@ void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_spee
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(sp->u("ourTexture1"), 0);
 	
-
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
 	M_wieza = glm::translate(M, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -112,12 +96,10 @@ void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_spee
 	M_wieza = glm::rotate(M_wieza, glm::radians(90.0f - angle), glm::vec3(0.0f, 1.0f, 0.0f));
 	M_wieza = glm::rotate(M_wieza, glm::radians(pitch), glm::vec3(0.0f, 1.0f, 0.0f));
 
-
 	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M_wieza));
 
 	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices2[0]);
 	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals2[0]);
-
 
 	glDrawArrays(GL_TRIANGLES, 0, vertices2.size());
 
@@ -165,5 +147,6 @@ void Tank::move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_spee
 	}
 	glDisableVertexAttribArray(sp->a("vertex"));
 	glDisableVertexAttribArray(sp->a("normal"));
+	glDisableVertexAttribArray(sp->a("aTexCoord"));
 
 	}

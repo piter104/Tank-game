@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "constants.h"
-#include "allmodels.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
 
@@ -59,7 +58,6 @@ public:
 	glm::mat4 getM_wieza();
 	glm::mat4 getM_lufa();
 	glm::mat4 getM();
-	bool collision_detector(glm::vec3 object_position, glm::vec3 object_size);
 	void move(glm::vec3 speed_vector, float wheel_speed_left, float wheel_speed_right, float angle, float pitch, float yaw, glm::vec3& camera_transform, glm::vec3& cameraFront, glm::vec3& cameraPos, glm::vec3 cameraUp, ShaderProgram* sp, GLuint tex, GLuint tex2);
 };
 

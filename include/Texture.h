@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "constants.h"
-#include "allmodels.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
 

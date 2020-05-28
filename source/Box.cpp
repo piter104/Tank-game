@@ -49,6 +49,7 @@ void Box::draw(ShaderProgram *sp, GLuint tex)
 
 		glEnableVertexAttribArray(sp->a("vertex"));
 		glEnableVertexAttribArray(sp->a("normal"));
+
 		glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices[0]);
 		glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
 
@@ -62,4 +63,5 @@ void Box::draw(ShaderProgram *sp, GLuint tex)
 
 		glDisableVertexAttribArray(sp->a("vertex"));
 		glDisableVertexAttribArray(sp->a("normal"));
+		glDisableVertexAttribArray(sp->a("aTexCoord"));
 }

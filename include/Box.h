@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "constants.h"
-#include "allmodels.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
 
@@ -19,7 +18,6 @@ class Box
 private:
 	//wspolrzedne obiektu
 	glm::vec3 coordinates;
-
 	glm::vec3 box_size = glm::vec3(2.3f, 2.5f, 2.3f);
 	glm::vec4 Position = glm::vec4(glm::vec3(0.0f), 1.0f);
 	glm::mat4 M_skrzynia = glm::mat4(1.0f);

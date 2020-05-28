@@ -40,10 +40,14 @@ void main(void) {
 
 
     d = distance(V * M * vertex, V * lp);
-    d = 1-(d/30.0f);
+    d = 1-(d / 30.0f);
+    if (d < 0.1)
+        d = 0.1;
 
     d2 = distance(V*M*vertex, V * lp2);
     d2 = 1-(d2 / 30.0f);
+    if (d2 < 0.1)
+        d2 = 0.1;
 
     gl_Position=P*V*M*vertex;
     TexCoord = aTexCoord;

@@ -45,9 +45,9 @@ void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex, ParticleS
 
 		glEnableVertexAttribArray(sp->a("vertex"));
 		glEnableVertexAttribArray(sp->a("normal"));
+
 		glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, &vertices[0]);
 		glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, &normals[0]);
-
 
 		glEnableVertexAttribArray(sp->a("aTexCoord"));
 		glVertexAttribPointer(sp->a("aTexCoord"), 2, GL_FLOAT, false, 0, &uvs[0]);
@@ -59,6 +59,7 @@ void Bullet::generate(glm::mat4 M_lufa, ShaderProgram *sp, GLuint tex, ParticleS
 
 		glDisableVertexAttribArray(sp->a("vertex"));
 		glDisableVertexAttribArray(sp->a("normal"));
+		glDisableVertexAttribArray(sp->a("aTexCoord"));
 }
 
 void Bullet::collision_detector(glm::vec3 object_position, glm::vec3 object_size, bool destroyed)

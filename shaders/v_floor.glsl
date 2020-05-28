@@ -8,7 +8,6 @@ uniform mat4 M;
 //Atrybuty
 in vec4 vertex; //wspolrzedne wierzcholka w przestrzeni modelu
 in vec4 normal;
-out vec4 iC;
 out vec4 l;
 out vec4 n;
 out vec4 v;

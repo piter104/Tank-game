@@ -1,5 +1,4 @@
 #pragma once
-#include <include/model.h>
 #include <include\shaderprogram.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

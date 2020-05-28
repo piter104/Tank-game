@@ -21,8 +21,7 @@ void Floor::draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram* sp)
 
 	glEnableVertexAttribArray(sp->a("vertex"));
 	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, verts);
-	glEnableVertexAttribArray(sp->a("color"));
-	glVertexAttribPointer(sp->a("color"), 4, GL_FLOAT, false, 0, colors);
+
 	glEnableVertexAttribArray(sp->a("normal"));
 	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, normals);
 
@@ -30,17 +29,12 @@ void Floor::draw_floor(glm::mat4 P, glm::mat4 V, GLuint tex, ShaderProgram* sp)
 	glVertexAttribPointer(sp->a("aTexCoord"), 2, GL_FLOAT, false, 0, texCoords);
 
 	glActiveTexture(GL_TEXTURE0);
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(sp->u("ourTexture1"), 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
 	glDisableVertexAttribArray(sp->a("vertex"));
-	glDisableVertexAttribArray(sp->a("color"));
 	glDisableVertexAttribArray(sp->a("normal"));
 	glDisableVertexAttribArray(sp->a("aTexCoord"));
 
