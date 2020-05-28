@@ -14,12 +14,9 @@ out vec4 n;
 out vec4 v;
 
 out vec4 l2;
-out vec4 n2;
-out vec4 v2;
 
 out float d;
 out float d2;
-
 
 uniform vec4 lp;
 uniform vec4 lp2;
@@ -35,9 +32,6 @@ void main(void) {
     v = normalize(vec4(0, 0, 0, 1) - V * M * vertex);
 
     l2 = normalize(V * lp2 - V * M * vertex);
-    n2 = normalize(V * M * normal);
-    v2 = normalize(vec4(0, 0, 0, 1) - V * M * vertex);
-
 
     d = distance(V * M * vertex, V * lp);
     d = 1-(d / 30.0f);
